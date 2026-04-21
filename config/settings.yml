@@ -1,0 +1,151 @@
+# SearXNG Settings - 国内优化版
+# 参考: 国内部署关键三点配置
+
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "SearXNG"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: true
+
+search:
+  safe_search: 0
+  autocomplete: "google"
+  default_lang: "zh-CN"
+  ban_time_on_fail: 5
+  max_ban_time_on_fail: 120
+  # 国内优化：并发请求和超时
+  concurrent_requests_per_engine: 5
+  max_request_timeout: 5.0
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "ultrasecretkey_change_me"
+  limiter: true
+  image_proxy: true
+  # 国内可访问的公共实例
+  public_instance: false
+
+ui:
+  static_use_hash: true
+  default_locale: "zh-CN"
+  theme_args:
+    simple_style: auto
+  infinite_scroll: true
+  center_alignment: true
+  query_in_title: true
+
+redis:
+  url: "redis://redis:6379/0"
+
+# 缓存配置 - 避免重复请求
+cache:
+  cache_server: "redis://redis:6379/1"
+  expire: 86400
+
+# 启用的搜索引擎 - 国内优先
+engines:
+
+  # === 国内搜索引擎 ===
+  - name: baidu
+    engine: baidu
+    shortcut: bd
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou
+    engine: sogou
+    shortcut: sg
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  # === 国际搜索引擎 ===
+  - name: google
+    engine: google
+    shortcut: go
+    categories: [general]
+    disabled: false
+    use_mobile_ui: false
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    categories: [general]
+    disabled: false
+
+  - name: bing
+    engine: bing
+    shortcut: bi
+    categories: [general]
+    disabled: false
+
+  # === 学术搜索 ===
+  - name: google scholar
+    engine: google_scholar
+    shortcut: gs
+    categories: [science, scientific publications]
+    disabled: false
+
+  - name: semantic scholar
+    engine: semanticscholar
+    shortcut: ss
+    categories: [science, scientific publications]
+    disabled: false
+
+  # === 知识类 ===
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    categories: [general]
+    disabled: false
+
+  - name: wikidata
+    engine: wikidata
+    shortcut: wd
+    categories: [general]
+    disabled: false
+
+  # === IT/开发 ===
+  - name: github
+    engine: github
+    shortcut: gh
+    categories: [it, repos]
+    disabled: false
+
+  - name: stackoverflow
+    engine: stackoverflow
+    shortcut: st
+    categories: [it, qna]
+    disabled: false
+
+  # === 图片 ===
+  - name: google images
+    engine: google_images
+    shortcut: gis
+    categories: [images]
+    disabled: false
+
+  - name: bing images
+    engine: bing_images
+    shortcut: bii
+    categories: [images]
+    disabled: false
+
+  # === 视频 ===
+  - name: youtube
+    engine: youtube_noapi
+    shortcut: yt
+    categories: [videos]
+    disabled: false
+
+  # 禁用国内无法访问的引擎
+  - name: yahoo
+    disabled: true
+  - name: yandex
+    disabled: true
