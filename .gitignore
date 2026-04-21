@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -89,3 +90,13 @@ coverage.xml
 
 # dotenv
 .env
+=======
+# Environment
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*_secret*
+credentials.json
+>>>>>>> 895fcf7 (🔒 Security: .gitignore补全.env/密钥防护规则)
