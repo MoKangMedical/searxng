@@ -438,17 +438,40 @@
             .nav { display: none; }
             .search-box { flex-direction: column; }
         }
-    </style>
+    /* Responsive improvements */
+@media(max-width:768px){
+.hero{padding:4rem 1.5rem 2rem}
+.hero h1{font-size:2rem}
+.features,.grid{grid-template-columns:1fr}
+.price-cards{grid-template-columns:1fr}
+.stats{gap:1.5rem}
+.nav{padding:0.8rem 1rem}
+.nav div{gap:0.3rem}
+.nav a{margin:0 0.4rem;font-size:0.8rem}
+.container{padding:1rem}
+}
+@media(max-width:480px){
+.hero h1{font-size:1.5rem}
+.card{padding:1.2rem}
+.metric .value{font-size:2rem}
+}
+</style>
+  <meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mokangmedical.github.io/searxng/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"SearXNG Medical AI - 医疗AI智能搜索引擎","description":"基于SearXNG的医疗AI智能搜索引擎，支持多源聚合、隐私保护、专业医疗搜索","url":"https://mokangmedical.github.io/searxng/","provider":{"@type":"Organization","name":"SearXNG Medical AI - 医疗AI智能搜索引擎"}}
+</script>
 </head>
 <body style="padding-top:56px!important">
 <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
   <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700;font-size:15px">
     <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="url(#ng1)" stroke-width="2.5"/><path d="M10 16h12M16 10v12" stroke="url(#ng1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="ng1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs></svg>
-    <span style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MoKangMedical</span>
+    <span style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SearXNG Medical AI - 医疗AI智能搜索引擎</span>
   </a>
   <div style="display:flex;gap:6px;align-items:center">
     <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">生态首页</a>
-    <a href="https://github.com/MoKangMedical" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">GitHub</a>
+    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px"><a href="pricing.html">定价</a>
+<a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎">GitHub</a>
     <a href="https://mokangmedical.github.io/opc-alliance/" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">OPC Hub</a>
   </div>
 </nav>
@@ -468,7 +491,8 @@
                 <a href="#features">功能</a>
                 <a href="#demo">演示</a>
                 <a href="#pricing">定价</a>
-                <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+                <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng">GitHub</a><a href="pricing.html">Pricing</a>
+<a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎">GitHub</a>
             </nav>
         </div>
     </header>
@@ -479,7 +503,7 @@
             <h1>医疗AI智能搜索引擎</h1>
             <p>基于SearXNG的私有元搜索引擎，支持多源聚合、隐私保护、专业医疗搜索</p>
             <div class="hero-buttons">
-                <a href="https://github.com/MoKangMedical/searxng" class="btn btn-primary">开始使用</a>
+                <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" class="btn btn-primary">开始使用</a>
                 <a href="#demo" class="btn btn-secondary">在线演示</a>
             </div>
         </div>
@@ -593,7 +617,7 @@
                         <li>JSON API接口</li>
                         <li>社区支持</li>
                     </ul>
-                    <a href="https://github.com/MoKangMedical/searxng" class="btn btn-secondary" style="color: var(--primary); border-color: var(--primary);">开始使用</a>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" class="btn btn-secondary" style="color: var(--primary); border-color: var(--primary);">开始使用</a>
                 </div>
                 <div class="pricing-card featured">
                     <h3>专业版</h3>
@@ -626,7 +650,13 @@
     </section>
     
     <!-- Footer -->
-    <footer class="footer">
+    
+<section style="text-align:center;padding:4rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.1),transparent)">
+<h2 style="font-size:1.8rem;margin-bottom:1rem">Ready to get started?</h2>
+<p style="color:#94a3b8;margin-bottom:2rem">Join leading organizations using searxng</p>
+<a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="display:inline-block;padding:.8rem 2rem;background:#6366f1;color:#fff;border-radius:8px;font-weight:600;text-decoration:none">Get Started Free</a>
+</section>
+<footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div>
@@ -645,7 +675,8 @@
                 </div>
                 <div>
                     <h4>社区</h4>
-                    <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng">GitHub</a><a href="pricing.html">Pricing</a>
+<a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎">GitHub</a>
                     <a href="javascript:void(0)">Discord</a>
                     <a href="javascript:void(0)">讨论区</a>
                     <a href="docs.html">贡献指南</a>
@@ -724,7 +755,7 @@ document.querySelectorAll('[data-count], .stat-number, .counter').forEach(el => 
     }, 25);
 });
 
-console.log('MoKangMedical interactive features loaded');
+console.log('SearXNG Medical AI - 医疗AI智能搜索引擎 interactive features loaded');
 </script>
 </body>
 </html>

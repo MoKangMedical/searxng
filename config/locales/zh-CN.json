@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "SearXNG Medical AI",
+    "description": "医疗AI智能搜索引擎"
+  },
+  "search": {
+    "placeholder": "输入搜索关键词...",
+    "button": "搜索",
+    "advanced": "高级搜索",
+    "filters": "筛选",
+    "sort": "排序",
+    "results": "搜索结果",
+    "noResults": "未找到结果",
+    "loading": "搜索中...",
+    "error": "搜索出错"
+  },
+  "categories": {
+    "all": "全部",
+    "general": "网页",
+    "images": "图片",
+    "videos": "视频",
+    "news": "新闻",
+    "science": "学术",
+    "it": "技术",
+    "files": "文件",
+    "social media": "社交媒体"
+  },
+  "engines": {
+    "baidu": "百度",
+    "sogou": "搜狗",
+    "360search": "360搜索",
+    "google": "Google",
+    "bing": "Bing",
+    "duckduckgo": "DuckDuckGo",
+    "google_scholar": "学术搜索",
+    "arxiv": "arXiv",
+    "github": "GitHub",
+    "stackoverflow": "StackOverflow",
+    "huggingface": "HuggingFace",
+    "sogou_wechat": "微信"
+  },
+  "filters": {
+    "time": {
+      "label": "时间范围",
+      "any": "任何时间",
+      "day": "过去24小时",
+      "week": "过去一周",
+      "month": "过去一月",
+      "year": "过去一年"
+    },
+    "language": {
+      "label": "语言",
+      "auto": "自动检测",
+      "zh-CN": "中文",
+      "en": "英文",
+      "ja": "日文",
+      "ko": "韩文"
+    },
+    "safeSearch": {
+      "label": "安全搜索",
+      "strict": "严格",
+      "moderate": "适中",
+      "none": "关闭"
+    }
+  },
+  "results": {
+    "number": "结果数",
+    "responseTime": "响应时间",
+    "page": "页码",
+    "next": "下一页",
+    "prev": "上一页",
+    "cached": "缓存",
+    "source": "来源",
+    "engines": "搜索引擎"
+  },
+  "shortcuts": {
+    "title": "快捷搜索",
+    "bd": "百度搜索",
+    "sg": "搜狗搜索",
+    "360": "360搜索",
+    "gs": "学术搜索",
+    "sgw": "微信搜索",
+    "gh": "GitHub搜索",
+    "pm": "PubMed搜索"
+  },
+  "settings": {
+    "title": "设置",
+    "general": "通用",
+    "theme": "主题",
+    "themeAuto": "自动",
+    "themeLight": "亮色",
+    "themeDark": "暗色",
+    "language": "语言",
+    "resultsPerPage": "每页结果数",
+    "save": "保存",
+    "reset": "重置"
+  },
+  "errors": {
+    "network": "网络错误",
+    "timeout": "请求超时",
+    "server": "服务器错误",
+    "notFound": "未找到",
+    "forbidden": "无权限",
+    "rateLimit": "请求过于频繁"
+  },
+  "footer": {
+    "poweredBy": "由 SearXNG 提供支持",
+    "version": "版本",
+    "privacy": "隐私政策",
+    "terms": "使用条款",
+    "contact": "联系我们"
+  }
+}

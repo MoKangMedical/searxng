@@ -1,0 +1,212 @@
+# SearXNG 安全配置
+
+# 认证配置
+authentication:
+  # API Key认证
+  api_key:
+    enabled: true
+    header: "X-API-Key"
+    query_param: "api_key"
+    # Key生成规则
+    prefix: "sk-"
+    length: 32
+  
+  # JWT认证
+  jwt:
+    enabled: false
+    secret: "your-jwt-secret-key"
+    expiration: 3600  # 1小时
+    refresh_expiration: 86400  # 24小时
+
+# 速率限制
+rate_limiting:
+  enabled: true
+  # 默认限制
+  default:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    requests_per_day: 10000
+  
+  # API限制
+  api:
+    requests_per_minute: 120
+    requests_per_hour: 2000
+    requests_per_day: 20000
+  
+  # 搜索限制
+  search:
+    requests_per_minute: 30
+    requests_per_hour: 500
+    requests_per_day: 5000
+
+# CORS配置
+cors:
+  enabled: true
+  origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    - "https://your-domain.com"
+  methods:
+    - "GET"
+    - "POST"
+    - "OPTIONS"
+  headers:
+    - "Content-Type"
+    - "Authorization"
+    - "X-API-Key"
+  credentials: true
+  max_age: 3600
+
+# 安全头
+security_headers:
+  # HSTS
+  strict_transport_security:
+    enabled: true
+    max_age: 31536000
+    include_subdomains: true
+    preload: true
+  
+  # 内容安全策略
+  content_security_policy:
+    enabled: true
+    policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
+  
+  # XSS防护
+  x_xss_protection:
+    enabled: true
+    mode: "block"
+  
+  # 内容类型嗅探
+  x_content_type_options:
+    enabled: true
+    value: "nosniff"
+  
+  # 帧选项
+  x_frame_options:
+    enabled: true
+    value: "SAMEORIGIN"
+  
+  # 引荐来源
+  referrer_policy:
+    enabled: true
+    value: "strict-origin-when-cross-origin"
+
+# 输入验证
+input_validation:
+  # 查询验证
+  query:
+    max_length: 500
+    min_length: 1
+    # 禁止的字符
+    blocked_patterns:
+      - "<script>"
+      - "javascript:"
+      - "on\\w+="
+  
+  # 参数验证
+  parameters:
+    engines:
+      allowed:
+        - "baidu"
+        - "google"
+        - "bing"
+        - "sogou"
+        - "360search"
+        - "google_scholar"
+        - "arxiv"
+        - "github"
+        - "stackoverflow"
+        - "huggingface"
+        - "sogou_wechat"
+    
+    format:
+      allowed:
+        - "json"
+        - "html"
+        - "csv"
+        - "rss"
+    
+    language:
+      allowed:
+        - "auto"
+        - "zh-CN"
+        - "en"
+        - "ja"
+        - "ko"
+
+# 日志安全
+logging:
+  # 敏感信息过滤
+  sensitive_fields:
+    - "password"
+    - "token"
+    - "secret"
+    - "api_key"
+    - "authorization"
+  
+  # 日志级别
+  level: "INFO"
+  
+  # 审计日志
+  audit:
+    enabled: true
+    events:
+      - "login"
+      - "logout"
+      - "search"
+      - "api_call"
+      - "config_change"
+
+# 数据加密
+encryption:
+  # 传输加密
+  transport:
+    enabled: true
+    protocol: "TLS"
+    min_version: "1.2"
+    cipher_suites:
+      - "TLS_AES_256_GCM_SHA384"
+      - "TLS_CHACHA20_POLY1305_SHA256"
+      - "TLS_AES_128_GCM_SHA256"
+  
+  # 存储加密
+  storage:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 90
+
+# 合规性
+compliance:
+  # GDPR合规
+  gdpr:
+    enabled: true
+    # 数据保留期
+    data_retention_days: 30
+    # 用户同意
+    consent_required: false
+    # 数据导出
+    data_export: true
+    # 数据删除
+    data_deletion: true
+  
+  # HIPAA合规
+  hipaa:
+    enabled: true
+    # 访问控制
+    access_control: true
+    # 审计日志
+    audit_logging: true
+    # 数据加密
+    encryption: true
+    # 业务关联协议
+    baa_required: false
+  
+  # 中国网络安全法
+  china_cybersecurity:
+    enabled: true
+    # 数据本地化
+    data_localization: true
+    # 实名认证
+    real_name_auth: false
+    # 内容审查
+    content_review: false

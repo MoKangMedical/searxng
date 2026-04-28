@@ -1,0 +1,226 @@
+# SearXNG 医疗专业搜索引擎配置
+# 专为医疗AI项目优化
+
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "SearXNG Medical AI"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: true
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "medical-ai-secret-key-change-in-production"
+  limiter: false
+  image_proxy: true
+  method: "GET"
+
+search:
+  formats:
+    - html
+    - json
+    - csv
+    - rss
+  safe_search: 0
+  autocomplete: "baidu"
+  concurrent_requests_per_engine: 5
+  max_request_timeout: 10.0
+  ban_time_on_fail: 5
+  max_ban_time_on_fail: 120
+
+redis:
+  url: "redis://redis:6379/0"
+
+cache:
+  cache_server: "redis://redis:6379/1"
+  expire: 86400
+
+ui:
+  static_use_hash: true
+  infinite_scroll: true
+  center_alignment: true
+  query_in_title: true
+  results_on_new_tab: false
+  theme_args:
+    simple_style: auto
+
+engines:
+  # === 国内通用搜索引擎 ===
+  - name: baidu
+    engine: baidu
+    shortcut: bd
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou
+    engine: sogou
+    shortcut: sg
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: 360search
+    engine: 360search
+    shortcut: 360
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  # === 国际通用搜索引擎 ===
+  - name: google
+    engine: google
+    shortcut: go
+    categories: [general]
+    disabled: false
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    categories: [general]
+    disabled: false
+
+  - name: bing
+    engine: bing
+    shortcut: bi
+    categories: [general]
+    disabled: false
+
+  # === 医学学术搜索引擎 ===
+  - name: google scholar
+    engine: google_scholar
+    shortcut: gs
+    categories: [science, scientific publications]
+    disabled: false
+
+  - name: arxiv
+    engine: arxiv
+    shortcut: arx
+    categories: [science, scientific publications]
+    disabled: false
+
+  - name: semantic scholar
+    engine: semanticscholar
+    shortcut: ss
+    categories: [science, scientific publications]
+    disabled: false
+
+  - name: pubmed
+    engine: pubmed
+    shortcut: pm
+    categories: [science, scientific publications]
+    disabled: false
+
+  # === 医学专业资源 ===
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    categories: [general]
+    disabled: false
+
+  - name: wikidata
+    engine: wikidata
+    shortcut: wd
+    categories: [general]
+    disabled: false
+
+  # === 开发者资源 ===
+  - name: github
+    engine: github
+    shortcut: gh
+    categories: [it, repos]
+    disabled: false
+
+  - name: stackoverflow
+    engine: stackoverflow
+    shortcut: st
+    categories: [it, qna]
+    disabled: false
+
+  - name: huggingface
+    engine: huggingface
+    shortcut: hf
+    categories: [it, repos]
+    disabled: false
+
+  - name: huggingface datasets
+    engine: huggingface_datasets
+    shortcut: hfd
+    categories: [it, repos]
+    disabled: false
+
+  # === 国内图片搜索 ===
+  - name: baidu images
+    engine: baidu_images
+    shortcut: bdi
+    categories: [images]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou images
+    engine: sogou_images
+    shortcut: sgi
+    categories: [images]
+    disabled: false
+    timeout: 4.0
+
+  # === 国际图片搜索 ===
+  - name: google images
+    engine: google_images
+    shortcut: gis
+    categories: [images]
+    disabled: false
+
+  - name: bing images
+    engine: bing_images
+    shortcut: bii
+    categories: [images]
+    disabled: false
+
+  # === 国内视频搜索 ===
+  - name: 360search videos
+    engine: 360search_videos
+    shortcut: 360v
+    categories: [videos]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou videos
+    engine: sogou_videos
+    shortcut: sgv
+    categories: [videos]
+    disabled: false
+    timeout: 4.0
+
+  # === 国际视频搜索 ===
+  - name: youtube
+    engine: youtube_noapi
+    shortcut: yt
+    categories: [videos]
+    disabled: false
+
+  # === 微信搜索 ===
+  - name: sogou wechat
+    engine: sogou_wechat
+    shortcut: sgw
+    categories: [news]
+    disabled: false
+    timeout: 4.0
+
+  # === 开发者搜索 ===
+  - name: baidu kaifa
+    engine: baidu_kaifa
+    shortcut: bdk
+    categories: [it]
+    disabled: false
+    timeout: 4.0
+
+  # === 禁用的引擎 ===
+  - name: yahoo
+    disabled: true
+  - name: yandex
+    disabled: true

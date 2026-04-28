@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Playground - SearXNG Medical AI</title>
+    <meta name="description" content="Interactive SearXNG search playground - test search queries across 30+ engines with live results">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#1a73e8;--secondary:#4285f4;--bg:#ffffff;--bg-secondary:#f8f9fa;--bg-card:#ffffff;--text:#202124;--text-secondary:#5f6368;--border:#dadce0;--radius:12px;--green:#34a853;--red:#ea4335}
+        @media(prefers-color-scheme:dark){:root{--bg:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--text:#e6edf3;--text-secondary:#8b949e;--border:#30363d}}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+        .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:24px 0;position:sticky;top:0;z-index:1000}
+        .header .container{display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
+        .logo svg{width:36px;height:36px}
+        .logo-text{font-size:20px;font-weight:700}
+        .nav{display:flex;gap:28px}
+        .nav a{color:rgba(255,255,255,0.85);text-decoration:none;font-weight:500;font-size:14px}
+        .container{max-width:1000px;margin:0 auto;padding:0 20px}
+        .hero{padding:60px 0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;text-align:center}
+        .hero h1{font-size:42px;font-weight:800;margin-bottom:12px}
+        .hero p{font-size:16px;opacity:0.85;max-width:600px;margin:0 auto}
+        .section{padding:40px 0}
+
+        /* Search Box */
+        .search-box{max-width:700px;margin:0 auto 30px}
+        .search-input-wrapper{display:flex;gap:12px;margin-bottom:16px}
+        .search-input{flex:1;padding:16px 24px;border:2px solid var(--border);border-radius:30px;font-size:16px;background:var(--bg-card);color:var(--text);outline:none;transition:border-color 0.2s}
+        .search-input:focus{border-color:var(--primary)}
+        .search-btn{padding:16px 32px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border:none;border-radius:30px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+        .search-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(26,115,232,0.3)}
+        .search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+        /* Engine Selector */
+        .engine-selector{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+        .engine-chip{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:13px;cursor:pointer;transition:all 0.2s}
+        .engine-chip:hover{border-color:var(--primary)}
+        .engine-chip.active{background:var(--primary);color:white;border-color:var(--primary)}
+        .engine-chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+        /* Results */
+        .results-container{max-width:700px;margin:0 auto}
+        .result-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:12px 16px;background:var(--bg-secondary);border-radius:8px;font-size:14px;color:var(--text-secondary)}
+        .result-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:12px 0;transition:all 0.2s}
+        .result-item:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+        .result-title{font-size:16px;font-weight:600;margin-bottom:6px}
+        .result-title a{color:var(--primary);text-decoration:none}
+        .result-title a:hover{text-decoration:underline}
+        .result-url{font-size:12px;color:var(--green);margin-bottom:8px;word-break:break-all}
+        .result-content{font-size:14px;color:var(--text-secondary);line-height:1.6}
+        .result-engines{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+        .result-engine{padding:2px 8px;background:var(--bg-secondary);border-radius:4px;font-size:11px;color:var(--text-secondary)}
+
+        /* Loading */
+        .loading{text-align:center;padding:40px;color:var(--text-secondary)}
+        .spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* Quick Searches */
+        .quick-searches{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0}
+        .quick-search{padding:8px 16px;border-radius:20px;background:var(--bg-secondary);color:var(--text);font-size:13px;cursor:pointer;border:1px solid var(--border);transition:all 0.2s;text-decoration:none}
+        .quick-search:hover{border-color:var(--primary);color:var(--primary)}
+
+        /* API Info */
+        .api-info{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:30px auto;max-width:700px}
+        .api-info h3{font-size:16px;font-weight:700;margin-bottom:12px}
+        .api-info code{background:var(--bg-secondary);padding:2px 8px;border-radius:4px;font-size:13px;font-family:'SF Mono',Monaco,Consolas,monospace}
+        .api-info pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-size:13px}
+
+        /* Error */
+        .error-msg{background:rgba(234,67,53,0.1);border:1px solid var(--red);border-radius:8px;padding:16px;color:var(--red);text-align:center;margin:20px 0}
+
+        /* Footer */
+        .footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:40px 0 20px;margin-top:60px}
+        .footer .container{text-align:center;color:var(--text-secondary);font-size:13px}
+
+        @media(max-width:768px){.nav{display:none}.hero h1{font-size:28px}.search-input-wrapper{flex-direction:column}.search-btn{width:100%}}
+    </style>
+</head>
+<body>
+    <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2"/><path d="M12 6L6 9.5l6 3.5 6-3.5L12 6z" fill="#6366f1"/></svg>
+            OPC Ecosystem
+        </a>
+        <div style="display:flex;gap:4px;align-items:center">
+            <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Home</a>
+            <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Overview</a>
+            <a href="features.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Features</a>
+            <a href="playground.html" style="color:#fff;text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px;background:rgba(99,102,241,0.3)">Playground</a>
+            <a href="api-docs.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">API</a>
+            <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:12px;text-decoration:none">GitHub</a>
+        </div>
+    </nav>
+    <div style="height:48px"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="white" stroke-width="2"/><circle cx="20" cy="16" r="6" stroke="white" stroke-width="2"/><path d="M12 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">Overview</a>
+                <a href="features.html">Features</a>
+                <a href="playground.html" style="color:white">Playground</a>
+                <a href="api-docs.html">API</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>Search Playground</h1>
+            <p>Test search queries across 30+ engines. Requires local SearXNG instance running on port 8888.</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Enter search query..." onkeypress="if(event.key==='Enter')doSearch()">
+                    <button class="search-btn" id="searchBtn" onclick="doSearch()">Search</button>
+                </div>
+
+                <div class="engine-selector">
+                    <span class="engine-chip active" data-engine="" onclick="toggleEngine(this)">All Engines</span>
+                    <span class="engine-chip" data-engine="google,bing" onclick="toggleEngine(this)">International</span>
+                    <span class="engine-chip" data-engine="baidu,sogou" onclick="toggleEngine(this)">China</span>
+                    <span class="engine-chip" data-engine="google_scholar,arxiv,semanticscholar" onclick="toggleEngine(this)">Academic</span>
+                    <span class="engine-chip" data-engine="github,stackoverflow,huggingface" onclick="toggleEngine(this)">Developer</span>
+                    <span class="engine-chip" data-engine="wikipedia,wikidata" onclick="toggleEngine(this)">Knowledge</span>
+                    <span class="engine-chip" data-engine="google_images,bing_images" onclick="toggleEngine(this)">Images</span>
+                    <span class="engine-chip" data-engine="sogou_wechat" onclick="toggleEngine(this)">WeChat</span>
+                </div>
+
+                <div class="quick-searches">
+                    <span class="quick-search" onclick="quickSearch('rare disease treatment')">rare disease treatment</span>
+                    <span class="quick-search" onclick="quickSearch('CRISPR gene therapy')">CRISPR gene therapy</span>
+                    <span class="quick-search" onclick="quickSearch('machine learning drug discovery')">ML drug discovery</span>
+                    <span class="quick-search" onclick="quickSearch('SearXNG deployment')">SearXNG deployment</span>
+                    <span class="quick-search" onclick="quickSearch('罕见病诊疗')">罕见病诊疗</span>
+                    <span class="quick-search" onclick="quickSearch('AlphaFold protein')">AlphaFold protein</span>
+                </div>
+            </div>
+
+            <div id="results"></div>
+
+            <div class="api-info">
+                <h3>API Usage</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:12px">This playground calls the SearXNG JSON API. You can use it programmatically:</p>
+                <pre>
+// JavaScript
+const res = await fetch("http://localhost:8888/search?q=medical+AI&format=json&engines=google,bing");
+const data = await res.json();
+console.log(data.results);
+
+// Python
+import requests
+r = requests.get("http://localhost:8888/search", params={
+    "q": "medical AI",
+    "format": "json",
+    "engines": "google,bing,arxiv"
+})
+print(r.json()["results"])</pre>
+                <p style="color:var(--text-secondary);font-size:13px;margin-top:8px">
+                    <strong>Note:</strong> Requires <code>search.formats: [html, json]</code> in settings.yml.
+                    See <a href="api-docs.html" style="color:var(--primary);text-decoration:none">API Docs</a> for full reference.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>2024-2026 SearXNG Medical AI - 医疗AI智能搜索引擎. SearXNG Medical AI Search Playground.</p>
+            <p style="margin-top:8px">
+                <a href="index.html" style="color:var(--primary);text-decoration:none">Home</a> |
+                <a href="features.html" style="color:var(--primary);text-decoration:none">Features</a> |
+                <a href="api-docs.html" style="color:var(--primary);text-decoration:none">API</a> |
+                <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="color:var(--primary);text-decoration:none">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+    const BASE_URL = "http://localhost:8888";
+    let selectedEngines = "";
+
+    function toggleEngine(el) {
+        document.querySelectorAll('.engine-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        selectedEngines = el.dataset.engine;
+    }
+
+    function quickSearch(q) {
+        document.getElementById('searchInput').value = q;
+        doSearch();
+    }
+
+    async function doSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) return;
+
+        const btn = document.getElementById('searchBtn');
+        const resultsDiv = document.getElementById('results');
+        btn.disabled = true;
+        btn.textContent = 'Searching...';
+
+        resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:12px">Searching across engines...</p></div>';
+
+        try {
+            let url = `${BASE_URL}/search?q=${encodeURIComponent(query)}&format=json`;
+            if (selectedEngines) url += `&engines=${selectedEngines}`;
+
+            const startTime = Date.now();
+            const response = await fetch(url);
+            const data = await response.json();
+            const elapsed = Date.now() - startTime;
+
+            if (data.results && data.results.length > 0) {
+                let html = `
+                    <div class="result-meta">
+                        <span>Found <strong>${data.number_of_results || data.results.length}</strong> results in <strong>${elapsed}ms</strong></span>
+                        <span>${data.results.length} results shown</span>
+                    </div>
+                `;
+
+                data.results.slice(0, 20).forEach(r => {
+                    const engines = (r.engines || []).map(e => `<span class="result-engine">${e}</span>`).join('');
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title"><a href="${r.url}" target="_blank" rel="noopener">${escapeHtml(r.title || 'Untitled')}</a></div>
+                            <div class="result-url">${escapeHtml(r.url || '')}</div>
+                            <div class="result-content">${escapeHtml(r.content || '')}</div>
+                            ${engines ? `<div class="result-engines">${engines}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                if (data.unresponsive_engines && data.unresponsive_engines.length > 0) {
+                    html += `<p style="color:var(--text-secondary);font-size:13px;margin-top:16px">Unresponsive engines: ${data.unresponsive_engines.map(e => e[0]).join(', ')}</p>`;
+                }
+
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = '<div class="error-msg">No results found. Try a different query or check if SearXNG is running on port 8888.</div>';
+            }
+        } catch (err) {
+            resultsDiv.innerHTML = `<div class="error-msg">
+                <strong>Connection Error:</strong> Cannot reach SearXNG at ${BASE_URL}<br>
+                <span style="font-size:13px">Make sure SearXNG is running: <code>cd ~/.docker/searxng && docker compose up -d</code></span>
+                <br><span style="font-size:12px;opacity:0.7">${err.message}</span>
+            </div>`;
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Search';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Check if SearXNG is running
+    fetch(`${BASE_URL}/`, { mode: 'no-cors' }).catch(() => {
+        document.getElementById('results').innerHTML = `<div class="error-msg" style="margin-top:0">
+            <strong>SearXNG Not Detected</strong><br>
+            The search playground requires a local SearXNG instance on port 8888.<br>
+            <span style="font-size:13px">Start it: <code>cd ~/.docker/searxng && docker compose up -d</code></span>
+        </div>`;
+    });
+    </script>
+</body>
+</html>

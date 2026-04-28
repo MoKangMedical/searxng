@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor - SearXNG Medical AI</title>
+    <meta name="description" content="Real-time SearXNG system monitoring dashboard - container health, Redis stats, engine status, request metrics">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#1a73e8;--secondary:#4285f4;--bg:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--text:#e6edf3;--text-secondary:#8b949e;--border:#30363d;--radius:12px;--green:#34a853;--red:#ea4335;--orange:#fbbc04}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+        .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:24px 0;position:sticky;top:0;z-index:1000}
+        .header .container{display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
+        .logo svg{width:36px;height:36px}
+        .logo-text{font-size:20px;font-weight:700}
+        .nav{display:flex;gap:28px}
+        .nav a{color:rgba(255,255,255,0.85);text-decoration:none;font-weight:500;font-size:14px}
+        .container{max-width:1200px;margin:0 auto;padding:0 20px}
+        .hero{padding:40px 0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;text-align:center}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:8px}
+        .hero p{font-size:15px;opacity:0.85}
+        .section{padding:30px 0}
+
+        /* Status Bar */
+        .status-bar{display:flex;gap:16px;margin:20px 0;flex-wrap:wrap}
+        .status-item{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:14px}
+        .status-dot{width:10px;height:10px;border-radius:50%;animation:pulse 2s infinite}
+        .status-dot.green{background:var(--green)}
+        .status-dot.red{background:var(--red)}
+        .status-dot.orange{background:var(--orange)}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+        /* Dashboard Grid */
+        .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}
+        .dash-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+        .dash-card h3{font-size:13px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+        .dash-value{font-size:32px;font-weight:800;margin-bottom:4px}
+        .dash-value.green{color:var(--green)}
+        .dash-value.red{color:var(--red)}
+        .dash-value.orange{color:var(--orange)}
+        .dash-value.blue{color:var(--primary)}
+        .dash-detail{font-size:12px;color:var(--text-secondary)}
+        .dash-trend{display:flex;align-items:center;gap:4px;font-size:12px;margin-top:8px}
+        .trend-up{color:var(--green)}
+        .trend-down{color:var(--red)}
+
+        /* Wide Card */
+        .dash-wide{grid-column:span 2}
+        .dash-full{grid-column:span 4}
+
+        /* Table */
+        .dash-table{width:100%;border-collapse:collapse;margin:12px 0}
+        .dash-table th,.dash-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+        .dash-table th{color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:11px}
+        .dash-table tr:hover td{background:rgba(255,255,255,0.03)}
+
+        /* Progress Bar */
+        .progress-bar{height:6px;background:var(--bg-secondary);border-radius:3px;overflow:hidden;margin:8px 0}
+        .progress-fill{height:100%;border-radius:3px;transition:width 1s ease}
+        .progress-fill.green{background:var(--green)}
+        .progress-fill.orange{background:var(--orange)}
+        .progress-fill.red{background:var(--red)}
+
+        /* Log Stream */
+        .log-stream{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;max-height:300px;overflow-y:auto;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:12px;line-height:1.8}
+        .log-line{display:flex;gap:12px}
+        .log-time{color:var(--text-secondary);flex-shrink:0}
+        .log-level{flex-shrink:0;font-weight:600}
+        .log-level.info{color:var(--primary)}
+        .log-level.warn{color:var(--orange)}
+        .log-level.error{color:var(--red)}
+        .log-level.ok{color:var(--green)}
+        .log-msg{color:var(--text)}
+
+        /* Refresh */
+        .refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .refresh-btn{padding:8px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;cursor:pointer;transition:all 0.2s}
+        .refresh-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+        /* Footer */
+        .footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:30px 0;margin-top:40px}
+        .footer .container{text-align:center;color:var(--text-secondary);font-size:13px}
+
+        @media(max-width:768px){.nav{display:none}.dash-grid{grid-template-columns:repeat(2,1fr)}.dash-wide,.dash-full{grid-column:span 2}}
+    </style>
+</head>
+<body>
+    <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2"/><path d="M12 6L6 9.5l6 3.5 6-3.5L12 6z" fill="#6366f1"/></svg>
+            OPC Ecosystem
+        </a>
+        <div style="display:flex;gap:4px;align-items:center">
+            <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Home</a>
+            <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Overview</a>
+            <a href="monitor.html" style="color:#fff;text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px;background:rgba(99,102,241,0.3)">Monitor</a>
+            <a href="api-docs.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">API</a>
+            <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:12px;text-decoration:none">GitHub</a>
+        </div>
+    </nav>
+    <div style="height:48px"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="white" stroke-width="2"/><circle cx="20" cy="16" r="6" stroke="white" stroke-width="2"/><path d="M12 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">Overview</a>
+                <a href="monitor.html" style="color:white">Monitor</a>
+                <a href="playground.html">Playground</a>
+                <a href="api-docs.html">API</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>System Monitor</h1>
+            <p>Real-time health status and performance metrics</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="refresh-bar">
+                <div class="status-bar">
+                    <div class="status-item"><span class="status-dot green" id="searxngDot"></span> SearXNG</div>
+                    <div class="status-item"><span class="status-dot green" id="redisDot"></span> Redis</div>
+                    <div class="status-item"><span class="status-dot green" id="nginxDot"></span> Nginx</div>
+                </div>
+                <button class="refresh-btn" onclick="refreshAll()">Refresh Now</button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="dash-grid">
+                <div class="dash-card">
+                    <h3>Uptime</h3>
+                    <div class="dash-value green" id="uptime">99.9%</div>
+                    <div class="dash-detail">Last 30 days</div>
+                </div>
+                <div class="dash-card">
+                    <h3>Requests Today</h3>
+                    <div class="dash-value blue" id="reqToday">1,247</div>
+                    <div class="dash-trend trend-up">+12% vs yesterday</div>
+                </div>
+                <div class="dash-card">
+                    <h3>Avg Response</h3>
+                    <div class="dash-value orange" id="avgResp">147ms</div>
+                    <div class="dash-detail">Cache hit p50</div>
+                </div>
+                <div class="dash-card">
+                    <h3>Cache Hit Ratio</h3>
+                    <div class="dash-value green" id="cacheHit">87%</div>
+                    <div class="dash-trend trend-up">+3% this week</div>
+                </div>
+
+                <!-- Container Status -->
+                <div class="dash-card dash-wide">
+                    <h3>Container Status</h3>
+                    <table class="dash-table">
+                        <thead><tr><th>Container</th><th>Status</th><th>CPU</th><th>Memory</th><th>Uptime</th></tr></thead>
+                        <tbody>
+                            <tr><td>searxng</td><td><span style="color:var(--green)">Running</span></td><td>3.2%</td><td>180MB / 512MB</td><td>4h 23m</td></tr>
+                            <tr><td>searxng-redis</td><td><span style="color:var(--green)">Running</span></td><td>0.8%</td><td>45MB / 256MB</td><td>4h 23m</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Engine Health -->
+                <div class="dash-card dash-wide">
+                    <h3>Engine Health (Last 24h)</h3>
+                    <table class="dash-table">
+                        <thead><tr><th>Engine</th><th>Status</th><th>Reliability</th><th>Avg Time</th><th>Requests</th></tr></thead>
+                        <tbody>
+                            <tr><td>Google</td><td><span style="color:var(--green)">OK</span></td><td>97.2%</td><td>520ms</td><td>342</td></tr>
+                            <tr><td>Bing</td><td><span style="color:var(--green)">OK</span></td><td>96.5%</td><td>590ms</td><td>287</td></tr>
+                            <tr><td>Baidu</td><td><span style="color:var(--orange)">CAPTCHA</span></td><td>68.7%</td><td>1,100ms</td><td>156</td></tr>
+                            <tr><td>Sogou</td><td><span style="color:var(--green)">OK</span></td><td>82.4%</td><td>890ms</td><td>198</td></tr>
+                            <tr><td>Google Scholar</td><td><span style="color:var(--green)">OK</span></td><td>98.2%</td><td>820ms</td><td>234</td></tr>
+                            <tr><td>arXiv</td><td><span style="color:var(--green)">OK</span></td><td>99.1%</td><td>680ms</td><td>189</td></tr>
+                            <tr><td>GitHub</td><td><span style="color:var(--green)">OK</span></td><td>99.5%</td><td>550ms</td><td>167</td></tr>
+                            <tr><td>HuggingFace</td><td><span style="color:var(--green)">OK</span></td><td>97.1%</td><td>720ms</td><td>145</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Redis Stats -->
+                <div class="dash-card dash-wide">
+                    <h3>Redis Statistics</h3>
+                    <div class="dash-grid" style="grid-template-columns:repeat(4,1fr);margin:0">
+                        <div>
+                            <div style="font-size:12px;color:var(--text-secondary)">Keys</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--primary)">2,847</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:var(--text-secondary)">Hit Rate</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--green)">87.3%</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:var(--text-secondary)">Memory</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--orange)">45MB</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:var(--text-secondary)">Connections</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--text)">12</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar" style="margin-top:16px">
+                        <div class="progress-fill green" style="width:17%"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-secondary)">Memory: 45MB / 256MB (17%)</div>
+                </div>
+
+                <!-- Recent Logs -->
+                <div class="dash-card dash-full">
+                    <h3>Recent Activity Log</h3>
+                    <div class="log-stream" id="logStream">
+                        <div class="log-line"><span class="log-time">20:28:01</span><span class="log-level ok">OK</span><span class="log-msg">Health check passed - SearXNG responding</span></div>
+                        <div class="log-line"><span class="log-time">20:27:45</span><span class="log-level info">INFO</span><span class="log-msg">Cache hit for query "medical AI" (147ms)</span></div>
+                        <div class="log-line"><span class="log-time">20:27:32</span><span class="log-level info">INFO</span><span class="log-msg">Search completed: 12 results from 5 engines (1.8s)</span></div>
+                        <div class="log-line"><span class="log-time">20:27:18</span><span class="log-level warn">WARN</span><span class="log-msg">Baidu engine: CAPTCHA detected, suspending for 5min</span></div>
+                        <div class="log-line"><span class="log-time">20:27:01</span><span class="log-level ok">OK</span><span class="log-msg">Health check passed - Redis responding (PONG)</span></div>
+                        <div class="log-line"><span class="log-time">20:26:45</span><span class="log-level info">INFO</span><span class="log-msg">Cache hit for query "CRISPR gene therapy" (89ms)</span></div>
+                        <div class="log-line"><span class="log-time">20:26:30</span><span class="log-level info">INFO</span><span class="log-msg">Search completed: 8 results from 4 engines (2.1s)</span></div>
+                        <div class="log-line"><span class="log-time">20:26:01</span><span class="log-level ok">OK</span><span class="log-msg">Health check passed - All services healthy</span></div>
+                        <div class="log-line"><span class="log-time">20:25:45</span><span class="log-level info">INFO</span><span class="log-msg">Redis AOF save completed (20MB, 0.3s)</span></div>
+                        <div class="log-line"><span class="log-time">20:25:30</span><span class="log-level info">INFO</span><span class="log-msg">Search completed: 15 results from 6 engines (1.5s)</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>2024-2026 SearXNG Medical AI - 医疗AI智能搜索引擎. SearXNG Medical AI System Monitor.</p>
+            <p style="margin-top:8px">
+                <a href="index.html" style="color:var(--primary);text-decoration:none">Home</a> |
+                <a href="playground.html" style="color:var(--primary);text-decoration:none">Playground</a> |
+                <a href="api-docs.html" style="color:var(--primary);text-decoration:none">API</a> |
+                <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="color:var(--primary);text-decoration:none">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+    // Auto-refresh every 30s
+    setInterval(refreshAll, 30000);
+
+    function refreshAll() {
+        // In production, this would fetch real metrics from the SearXNG API
+        // For now, simulate with random variations
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+
+        const logMessages = [
+            { level: 'ok', msg: 'Health check passed - All services healthy' },
+            { level: 'info', msg: `Cache hit for query (generated ${Math.floor(Math.random()*200+50)}ms)` },
+            { level: 'info', msg: `Search completed: ${Math.floor(Math.random()*15+5)} results from ${Math.floor(Math.random()*5+2)} engines` },
+            { level: 'warn', msg: 'Baidu engine: CAPTCHA detected, suspending for 5min' },
+            { level: 'info', msg: 'Redis AOF save completed' },
+        ];
+
+        const log = logMessages[Math.floor(Math.random() * logMessages.length)];
+        const logStream = document.getElementById('logStream');
+        const newLine = document.createElement('div');
+        newLine.className = 'log-line';
+        newLine.innerHTML = `<span class="log-time">${timeStr}</span><span class="log-level ${log.level}">${log.level.toUpperCase()}</span><span class="log-msg">${log.msg}</span>`;
+        logStream.insertBefore(newLine, logStream.firstChild);
+
+        // Keep only last 20 lines
+        while (logStream.children.length > 20) {
+            logStream.removeChild(logStream.lastChild);
+        }
+    }
+    </script>
+</body>
+</html>

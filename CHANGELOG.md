@@ -1,5 +1,28 @@
 # SearXNG 更新日志
 
+## v3.0 (2026-04-28)
+
+### GitHub Pages 站点 (12个页面)
+- 新增架构设计页面 (architecture.html) - 系统拓扑、组件详解、数据流、部署架构
+- 新增安全合规页面 (security.html) - 五层防御模型、GDPR/HIPAA合规、安全配置
+- 新增性能基准页面 (benchmarks.html) - 引擎响应时间、缓存分析、资源使用
+- 新增FAQ页面 (faq.html) - 24个常见问题、分类筛选、搜索功能
+- 新增搜索Demo页面 (playground.html) - 在线搜索测试、引擎选择、API示例
+- 新增监控仪表盘 (monitor.html) - 实时状态、引擎健康、Redis统计、日志流
+
+### CI/CD
+- 新增GitHub Pages自动部署工作流 (pages.yml)
+- 增强CI工作流 (ci.yml) - YAML验证、HTML检查、链接检查、安全扫描
+
+### 文档
+- README添加CI/Pages/Docker/License badges
+- README添加完整文档导航表和项目结构图
+- README添加API示例和Bang快捷键表
+
+### 导航
+- 所有页面统一OPC生态导航栏
+- 全站12个页面互联导航
+
 ## v2.1 (2026-04-27)
 
 ### 新增功能

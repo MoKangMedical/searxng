@@ -777,3 +777,328 @@ footer {
         padding: 16px;
     }
 }
+
+/* ===== 搜索结果优化 ===== */
+
+/* 结果卡片样式 */
+.result {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.result:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.result:hover::before {
+    opacity: 1;
+}
+
+/* 结果标题 */
+.result h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.result h3 a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.result h3 a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+/* 结果URL */
+.result .url {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.result .url .favicon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+.result .url .domain {
+    color: var(--text-secondary);
+}
+
+.result .url .path {
+    color: var(--text-tertiary);
+}
+
+/* 结果摘要 */
+.result .content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.result .content .highlight {
+    color: var(--accent-primary);
+    font-weight: 500;
+    background: rgba(26, 115, 232, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* 结果元信息 */
+.result .meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.result .meta .engine {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result .meta .engine::before {
+    content: '🔍';
+    font-size: 10px;
+}
+
+.result .meta .date {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.result .meta .date::before {
+    content: '📅';
+    font-size: 10px;
+}
+
+.result .meta .cached {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.result .meta .cached:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+/* 结果图片 */
+.result .thumbnail {
+    float: right;
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-left: 16px;
+    margin-bottom: 8px;
+}
+
+/* 结果操作按钮 */
+.result .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.result .actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.result .actions button:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: var(--bg-secondary);
+}
+
+/* 结果来源标注 */
+.result .sources {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.result .sources .source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.result .sources .source::before {
+    content: '•';
+    color: var(--accent-primary);
+}
+
+/* 结果分组 */
+.results-group {
+    margin-bottom: 24px;
+}
+
+.results-group .group-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent-primary);
+}
+
+/* 结果排序 */
+.results-sort {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.results-sort button {
+    padding: 8px 16px;
+    font-size: 13px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.results-sort button.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.results-sort button:hover:not(.active) {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* 结果过滤 */
+.results-filter {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.results-filter .filter {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.results-filter .filter.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.results-filter .filter:hover:not(.active) {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* 结果统计 */
+.results-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.results-stats .count {
+    font-weight: 500;
+}
+
+.results-stats .time {
+    color: var(--text-tertiary);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .result {
+        padding: 16px;
+    }
+    
+    .result h3 {
+        font-size: 16px;
+    }
+    
+    .result .thumbnail {
+        float: none;
+        width: 100%;
+        height: auto;
+        margin: 0 0 12px 0;
+    }
+    
+    .result .meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .results-sort {
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+}

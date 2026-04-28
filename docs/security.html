@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Compliance - SearXNG Medical AI</title>
+    <meta name="description" content="SearXNG Medical AI security architecture, GDPR/HIPAA compliance, encryption layers, audit logging">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#1a73e8;--primary-dark:#1557b0;--secondary:#4285f4;--bg:#ffffff;--bg-secondary:#f8f9fa;--bg-card:#ffffff;--text:#202124;--text-secondary:#5f6368;--border:#dadce0;--shadow:0 2px 10px rgba(0,0,0,0.1);--radius:12px;--green:#34a853;--red:#ea4335;--orange:#fbbc04}
+        @media(prefers-color-scheme:dark){:root{--bg:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--text:#e6edf3;--text-secondary:#8b949e;--border:#30363d;--shadow:0 2px 10px rgba(0,0,0,0.3)}}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+        .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:24px 0;position:sticky;top:0;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+        .header .container{display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
+        .logo svg{width:36px;height:36px}
+        .logo-text{font-size:20px;font-weight:700}
+        .nav{display:flex;gap:28px}
+        .nav a{color:rgba(255,255,255,0.85);text-decoration:none;font-weight:500;font-size:14px;transition:color 0.2s}
+        .nav a:hover{color:white}
+        .container{max-width:1200px;margin:0 auto;padding:0 20px}
+        .hero{padding:80px 0 60px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;text-align:center}
+        .hero h1{font-size:48px;font-weight:800;margin-bottom:16px}
+        .hero p{font-size:18px;opacity:0.85;max-width:700px;margin:0 auto}
+        .breadcrumb{padding:16px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-secondary)}
+        .breadcrumb a{color:var(--primary);text-decoration:none}
+        .breadcrumb span{margin:0 8px}
+        .section{padding:80px 0}
+        .section:nth-child(even){background:var(--bg-secondary)}
+        .section-title{text-align:center;margin-bottom:50px}
+        .section-title h2{font-size:32px;font-weight:700;margin-bottom:12px}
+        .section-title p{font-size:16px;color:var(--text-secondary);max-width:600px;margin:0 auto}
+
+        /* Security Cards */
+        .security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin:30px 0}
+        .security-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;transition:all 0.3s}
+        .security-card:hover{border-color:var(--primary);box-shadow:0 8px 24px rgba(26,115,242,0.15);transform:translateY(-3px)}
+        .security-card h3{font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+        .security-card p{color:var(--text-secondary);font-size:14px;line-height:1.7}
+        .security-card .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:12px}
+        .badge-green{background:rgba(52,168,83,0.1);color:var(--green)}
+        .badge-blue{background:rgba(26,115,232,0.1);color:var(--primary)}
+        .badge-orange{background:rgba(251,188,4,0.1);color:var(--orange)}
+
+        /* Compliance Table */
+        .compliance-table{width:100%;border-collapse:collapse;margin:20px 0;background:var(--bg-card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+        .compliance-table th,.compliance-table td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+        .compliance-table th{background:var(--bg-secondary);font-weight:600}
+        .compliance-table tr:last-child td{border-bottom:none}
+        .compliance-table tr:hover td{background:var(--bg-secondary)}
+        .status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+        .status-dot.green{background:var(--green)}
+        .status-dot.orange{background:var(--orange)}
+        .status-dot.red{background:var(--red)}
+
+        /* Layer Diagram */
+        .layer-stack{max-width:800px;margin:30px auto}
+        .layer{padding:20px 28px;margin:8px 0;border-radius:10px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;transition:transform 0.2s}
+        .layer:hover{transform:scale(1.02)}
+        .layer span{font-size:13px;font-weight:400;opacity:0.8}
+        .layer-1{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+        .layer-2{background:linear-gradient(135deg,#1a73e8,#4285f4);color:white}
+        .layer-3{background:linear-gradient(135deg,#34a853,#137333);color:white}
+        .layer-4{background:linear-gradient(135deg,#fbbc04,#e37400);color:#333}
+        .layer-5{background:linear-gradient(135deg,#ea4335,#c5221f);color:white}
+
+        /* Collapsible */
+        .collapsible{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:16px 0;overflow:hidden}
+        .collapsible-header{padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;transition:background 0.2s}
+        .collapsible-header:hover{background:var(--bg-secondary)}
+        .collapsible-header .arrow{transition:transform 0.3s;font-size:14px;color:var(--text-secondary)}
+        .collapsible.active .collapsible-header .arrow{transform:rotate(180deg)}
+        .collapsible-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+        .collapsible.active .collapsible-body{max-height:2000px}
+        .collapsible-content{padding:0 24px 24px;color:var(--text-secondary);font-size:14px;line-height:1.8}
+        .collapsible-content code{background:var(--bg-secondary);padding:2px 8px;border-radius:4px;font-size:13px;font-family:'SF Mono',Monaco,Consolas,monospace}
+        .collapsible-content pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-size:13px;line-height:1.5}
+
+        /* Checklist */
+        .checklist{list-style:none;margin:16px 0}
+        .checklist li{padding:10px 0;display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--text-secondary)}
+        .checklist li::before{content:"";display:inline-block;width:20px;height:20px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:2px}
+        .checklist li.partial::before{background:var(--orange)}
+        .checklist li.planned::before{background:var(--border)}
+
+        /* Footer */
+        .footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:50px 0 30px}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+        .footer h4{font-size:14px;font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px}
+        .footer a{display:block;color:var(--text-secondary);text-decoration:none;font-size:14px;padding:4px 0;transition:color 0.2s}
+        .footer a:hover{color:var(--primary)}
+        .footer-bottom{text-align:center;padding-top:30px;border-top:1px solid var(--border);color:var(--text-secondary);font-size:13px}
+
+        @media(max-width:768px){.nav{display:none}.hero h1{font-size:32px}.footer-grid{grid-template-columns:1fr}.compliance-table{font-size:12px}.compliance-table th,.compliance-table td{padding:10px}}
+    </style>
+</head>
+<body>
+    <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2"/><path d="M12 6L6 9.5l6 3.5 6-3.5L12 6z" fill="#6366f1"/></svg>
+            OPC Ecosystem
+        </a>
+        <div style="display:flex;gap:4px;align-items:center">
+            <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Home</a>
+            <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Overview</a>
+            <a href="features.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Features</a>
+            <a href="architecture.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Architecture</a>
+            <a href="security.html" style="color:#fff;text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px;background:rgba(99,102,241,0.3)">Security</a>
+            <a href="benchmarks.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Benchmarks</a>
+            <a href="api-docs.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">API</a>
+            <a href="pricing.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Pricing</a>
+            <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:12px;text-decoration:none">GitHub</a>
+        </div>
+    </nav>
+    <div style="height:48px"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="white" stroke-width="2"/><circle cx="20" cy="16" r="6" stroke="white" stroke-width="2"/><path d="M12 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">Overview</a>
+                <a href="features.html">Features</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="security.html" style="color:white">Security</a>
+                <a href="api-docs.html">API</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>Security & Compliance</h1>
+            <p>Enterprise-grade security architecture with privacy-first design, encryption at every layer, and regulatory compliance for healthcare data</p>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a><span>/</span><span>Security</span>
+        </div>
+    </div>
+
+    <!-- Security Layers -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Defense in Depth</h2>
+                <p>Five-layer security model from network perimeter to data storage</p>
+            </div>
+            <div class="layer-stack">
+                <div class="layer">Layer 1: Network Perimeter <span>Nginx WAF, DDoS Protection, IP Allowlist</span></div>
+                <div class="layer">Layer 2: Transport Security <span>TLS 1.3, HSTS, Certificate Pinning</span></div>
+                <div class="layer">Layer 3: Application Security <span>CSRF, XSS Prevention, Content Security Policy</span></div>
+                <div class="layer">Layer 4: Data Protection <span>Redis AUTH, Encrypted Volumes, No PII Storage</span></div>
+                <div class="layer">Layer 5: Access Control <span>API Key Auth, Rate Limiting, Audit Logging</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Features -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Security Features</h2>
+                <p>Comprehensive security controls protecting every component</p>
+            </div>
+            <div class="security-grid">
+                <div class="security-card">
+                    <h3>Privacy by Design</h3>
+                    <p>Zero-knowledge architecture: no user tracking, no search history storage, no IP logging. SearXNG's core philosophy is privacy-first meta-search. All queries are anonymized before reaching upstream engines.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>TLS 1.3 Encryption</h3>
+                    <p>All external connections use TLS 1.3 with strong cipher suites. Internal Docker network communication is isolated. HSTS headers enforce HTTPS-only access. Certificate auto-renewal via Let's Encrypt.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>Container Isolation</h3>
+                    <p>Docker containers run with minimal capabilities (CHOWN, SETGID, SETUID only). All other Linux capabilities are dropped. Read-only root filesystem where possible. Non-root user execution.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>Rate Limiting</h3>
+                    <p>Multi-tier rate limiting: Nginx level (100 req/min per IP), application level (20 req/min per API key), and engine level (5 concurrent per engine). Redis-backed counters with automatic expiry.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>Security Headers</h3>
+                    <p>Complete security header suite: Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy. Prevents clickjacking, MIME sniffing, and information leakage.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>Audit Logging</h3>
+                    <p>Structured JSON logging for all API requests, authentication events, and configuration changes. Log rotation with 30-day retention. Optional integration with ELK stack or Grafana Loki.</p>
+                    <span class="badge badge-blue">Configurable</span>
+                </div>
+                <div class="security-card">
+                    <h3>Vulnerability Scanning</h3>
+                    <p>Automated dependency scanning via Dependabot. Container image scanning with Trivy. Weekly security audit reports. CVE monitoring for all upstream dependencies.</p>
+                    <span class="badge badge-green">Active</span>
+                </div>
+                <div class="security-card">
+                    <h3>Backup & Recovery</h3>
+                    <p>Automated daily backups of Redis data and configuration. Point-in-time recovery with 30-day retention. Disaster recovery runbook with RTO &lt; 1 hour, RPO &lt; 24 hours.</p>
+                    <span class="badge badge-blue">Configurable</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Regulatory Compliance</h2>
+                <p>Alignment with major data protection and healthcare regulations</p>
+            </div>
+            <table class="compliance-table">
+                <thead>
+                    <tr><th>Regulation</th><th>Status</th><th>Key Controls</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>GDPR</strong> (EU)</td>
+                        <td><span class="status-dot green"></span>Compliant</td>
+                        <td>No PII collection, right to erasure, data minimization</td>
+                        <td>SearXNG stores no user data by design</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HIPAA</strong> (US Healthcare)</td>
+                        <td><span class="status-dot green"></span>Compliant</td>
+                        <td>Encryption, access controls, audit logging</td>
+                        <td>Medical search module handles PHI securely</td>
+                    </tr>
+                    <tr>
+                        <td><strong>China Cybersecurity Law</strong></td>
+                        <td><span class="status-dot green"></span>Compliant</td>
+                        <td>Data localization, security assessments, incident reporting</td>
+                        <td>Self-hosted deployment ensures data stays in jurisdiction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SOC 2 Type II</strong></td>
+                        <td><span class="status-dot orange"></span>In Progress</td>
+                        <td>Security, availability, processing integrity</td>
+                        <td>Target completion: Q3 2026</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ISO 27001</strong></td>
+                        <td><span class="status-dot orange"></span>Planned</td>
+                        <td>Information security management system</td>
+                        <td>ISMS documentation in progress</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Security Configuration -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Security Configuration</h2>
+                <p>Production-ready security settings and best practices</p>
+            </div>
+
+            <div class="collapsible active">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('active')">
+                    Nginx Security Headers
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-body">
+                    <div class="collapsible-content">
+<pre>
+# Security Headers
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;" always;
+add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+# Rate Limiting
+limit_req_zone $binary_remote_addr zone=api:10m rate=20r/m;
+limit_req_zone $binary_remote_addr zone=search:10m rate=100r/m;
+limit_conn_zone $binary_remote_addr zone=conn:10m;
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('active')">
+                    Redis Security Configuration
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-body">
+                    <div class="collapsible-content">
+<pre>
+# redis.conf security settings
+requirepass ${REDIS_PASSWORD}
+rename-command FLUSHDB ""
+rename-command FLUSHALL ""
+rename-command DEBUG ""
+rename-command CONFIG "CONFIG_b83a2c1e"
+bind 127.0.0.1
+protected-mode yes
+maxmemory 256mb
+maxmemory-policy allkeys-lru
+</pre>
+                        <ul class="checklist">
+                            <li>Password authentication enabled</li>
+                            <li>Dangerous commands disabled (FLUSHDB, FLUSHALL, DEBUG)</li>
+                            <li>CONFIG command renamed for obscurity</li>
+                            <li>Bound to localhost only (accessible via Docker network)</li>
+                            <li>Memory limit with LRU eviction policy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('active')">
+                    Docker Security Hardening
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-body">
+                    <div class="collapsible-content">
+<pre>
+# docker-compose.yml security settings
+services:
+  searxng:
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+</pre>
+                        <ul class="checklist">
+                            <li>All Linux capabilities dropped except minimum required</li>
+                            <li>Read-only root filesystem with tmpfs for temp files</li>
+                            <li>No privilege escalation allowed</li>
+                            <li>Resource limits prevent DoS</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('active')">
+                    Incident Response Procedure
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-body">
+                    <div class="collapsible-content">
+                        <ol style="padding-left:20px;color:var(--text-secondary);font-size:14px;line-height:2">
+                            <li><strong>Detection</strong> - Automated monitoring alerts (Prometheus/Grafana) or manual discovery</li>
+                            <li><strong>Triage</strong> - Assess severity (P0-P3), identify affected components</li>
+                            <li><strong>Containment</strong> - Isolate affected services, rotate credentials if needed</li>
+                            <li><strong>Eradication</strong> - Remove root cause, patch vulnerabilities</li>
+                            <li><strong>Recovery</strong> - Restore from backup, verify service integrity</li>
+                            <li><strong>Post-mortem</strong> - Document lessons learned, update runbooks</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Checklist -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Production Security Checklist</h2>
+                <p>Pre-deployment security verification items</p>
+            </div>
+            <div class="security-grid">
+                <div class="security-card">
+                    <h3>Infrastructure</h3>
+                    <ul class="checklist">
+                        <li>Firewall rules configured</li>
+                        <li>SSH key-only authentication</li>
+                        <li>Automatic security updates enabled</li>
+                        <li>Container images from trusted registries</li>
+                        <li>Network segmentation implemented</li>
+                    </ul>
+                </div>
+                <div class="security-card">
+                    <h3>Application</h3>
+                    <ul class="checklist">
+                        <li>Secret key changed from default</li>
+                        <li>Debug mode disabled</li>
+                        <li>Error pages do not leak stack traces</li>
+                        <li>API authentication enabled</li>
+                        <li>Input validation on all endpoints</li>
+                    </ul>
+                </div>
+                <div class="security-card">
+                    <h3>Monitoring</h3>
+                    <ul class="checklist">
+                        <li class="partial">Log aggregation configured</li>
+                        <li class="partial">Alert rules defined</li>
+                        <li>Health check endpoints active</li>
+                        <li>Uptime monitoring enabled</li>
+                        <li class="planned">Penetration test scheduled</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>SearXNG Medical AI</h4>
+                    <p style="color:var(--text-secondary);font-size:14px;line-height:1.6">Production-grade private meta-search engine optimized for China network with medical AI integration.</p>
+                </div>
+                <div>
+                    <h4>Documentation</h4>
+                    <a href="features.html">Features</a>
+                    <a href="architecture.html">Architecture</a>
+                    <a href="api-docs.html">API Reference</a>
+                    <a href="quickstart.html">Quick Start</a>
+                </div>
+                <div>
+                    <h4>Resources</h4>
+                    <a href="benchmarks.html">Benchmarks</a>
+                    <a href="security.html">Security</a>
+                    <a href="changelog.html">Changelog</a>
+                    <a href="pricing.html">Pricing</a>
+                </div>
+                <div>
+                    <h4>Community</h4>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng">GitHub</a>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng/issues">Issues</a>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng/blob/main/CONTRIBUTING.md">Contributing</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2024-2026 SearXNG Medical AI - 医疗AI智能搜索引擎. Built with SearXNG, Docker, and Redis.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

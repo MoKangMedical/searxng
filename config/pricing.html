@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearXNG Medical AI - 定价</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid #1a73e8;
+        }
+        
+        .pricing-card.featured::before {
+            content: '最受欢迎';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: #1a73e8;
+            color: white;
+            padding: 5px 40px;
+            font-size: 14px;
+            transform: rotate(45deg);
+        }
+        
+        .pricing-card .plan-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .pricing-card .plan-price {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 5px;
+        }
+        
+        .pricing-card .plan-period {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .pricing-card .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .pricing-card .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pricing-card .plan-features li::before {
+            content: '✓';
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .pricing-card .plan-features li.disabled {
+            color: #999;
+        }
+        
+        .pricing-card .plan-features li.disabled::before {
+            content: '✗';
+            color: #f44336;
+        }
+        
+        .pricing-card .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .pricing-card .cta-button:hover {
+            background: #1557b0;
+        }
+        
+        .pricing-card .cta-button.secondary {
+            background: transparent;
+            border: 2px solid #1a73e8;
+            color: #1a73e8;
+        }
+        
+        .pricing-card .cta-button.secondary:hover {
+            background: #1a73e8;
+            color: white;
+        }
+        
+        .faq {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .faq h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .faq-item h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .faq-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .contact {
+            text-align: center;
+            color: white;
+        }
+        
+        .contact h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .contact p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .contact .contact-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #1a73e8;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .contact .contact-button:hover {
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>选择适合您的方案</h1>
+            <p>从个人开发者到大型企业，我们都有适合您的解决方案</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-name">社区版</div>
+                <div class="plan-price">免费</div>
+                <div class="plan-period">永久免费</div>
+                <ul class="plan-features">
+                    <li>基础搜索功能</li>
+                    <li>10+搜索引擎</li>
+                    <li>JSON API接口</li>
+                    <li>社区支持</li>
+                    <li class="disabled">医疗AI专业搜索</li>
+                    <li class="disabled">优先技术支持</li>
+                    <li class="disabled">SLA保证</li>
+                </ul>
+                <a href="demo.html" class="cta-button secondary">开始使用</a>
+            </div>
+            
+            <div class="pricing-card featured">
+                <div class="plan-name">专业版</div>
+                <div class="plan-price">$99</div>
+                <div class="plan-period">/月</div>
+                <ul class="plan-features">
+                    <li>所有社区版功能</li>
+                    <li>50+搜索引擎</li>
+                    <li>医疗AI专业搜索</li>
+                    <li>优先技术支持</li>
+                    <li>99.9% SLA保证</li>
+                    <li>最多10个用户</li>
+                    <li class="disabled">私有化部署</li>
+                </ul>
+                <a href="javascript:void(0)" class="cta-button">立即订阅</a>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="plan-name">企业版</div>
+                <div class="plan-price">定制</div>
+                <div class="plan-period">联系销售</div>
+                <ul class="plan-features">
+                    <li>所有专业版功能</li>
+                    <li>70+搜索引擎</li>
+                    <li>私有化部署</li>
+                    <li>定制开发</li>
+                    <li>7x24技术支持</li>
+                    <li>99.99% SLA保证</li>
+                    <li>无用户限制</li>
+                </ul>
+                <a href="contact.html" class="cta-button secondary">联系销售</a>
+            </div>
+        </div>
+        
+        <div class="faq">
+            <h2>常见问题</h2>
+            
+            <div class="faq-item">
+                <h3>可以免费试用吗？</h3>
+                <p>是的，社区版永久免费。专业版提供14天免费试用，无需信用卡。</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>支持哪些支付方式？</h3>
+                <p>我们支持信用卡、PayPal、银行转账等多种支付方式。企业版支持对公转账。</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>可以随时取消订阅吗？</h3>
+                <p>是的，您可以随时取消订阅。取消后，您可以继续使用到当前计费周期结束。</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>数据安全如何保证？</h3>
+                <p>我们严格遵守GDPR、HIPAA等法规，所有数据加密存储和传输，不记录用户搜索历史。</p>
+            </div>
+        </div>
+        
+        <div class="contact">
+            <h2>需要更多帮助？</h2>
+            <p>我们的销售团队随时为您提供咨询</p>
+            <a href="mailto:sales@example.com" class="contact-button">联系销售团队</a>
+        </div>
+    </div>
+</body>
+</html>

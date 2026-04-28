@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "SearXNG Medical AI",
+    "description": "Medical AI Intelligent Search Engine"
+  },
+  "search": {
+    "placeholder": "Enter search keywords...",
+    "button": "Search",
+    "advanced": "Advanced Search",
+    "filters": "Filters",
+    "sort": "Sort",
+    "results": "Search Results",
+    "noResults": "No results found",
+    "loading": "Searching...",
+    "error": "Search error"
+  },
+  "categories": {
+    "all": "All",
+    "general": "Web",
+    "images": "Images",
+    "videos": "Videos",
+    "news": "News",
+    "science": "Academic",
+    "it": "Technology",
+    "files": "Files",
+    "social media": "Social Media"
+  },
+  "engines": {
+    "baidu": "Baidu",
+    "sogou": "Sogou",
+    "360search": "360 Search",
+    "google": "Google",
+    "bing": "Bing",
+    "duckduckgo": "DuckDuckGo",
+    "google_scholar": "Academic Search",
+    "arxiv": "arXiv",
+    "github": "GitHub",
+    "stackoverflow": "StackOverflow",
+    "huggingface": "HuggingFace",
+    "sogou_wechat": "WeChat"
+  },
+  "filters": {
+    "time": {
+      "label": "Time Range",
+      "any": "Any time",
+      "day": "Past 24 hours",
+      "week": "Past week",
+      "month": "Past month",
+      "year": "Past year"
+    },
+    "language": {
+      "label": "Language",
+      "auto": "Auto detect",
+      "zh-CN": "Chinese",
+      "en": "English",
+      "ja": "Japanese",
+      "ko": "Korean"
+    },
+    "safeSearch": {
+      "label": "Safe Search",
+      "strict": "Strict",
+      "moderate": "Moderate",
+      "none": "Off"
+    }
+  },
+  "results": {
+    "number": "Results",
+    "responseTime": "Response time",
+    "page": "Page",
+    "next": "Next",
+    "prev": "Previous",
+    "cached": "Cached",
+    "source": "Source",
+    "engines": "Engines"
+  },
+  "shortcuts": {
+    "title": "Quick Search",
+    "bd": "Baidu Search",
+    "sg": "Sogou Search",
+    "360": "360 Search",
+    "gs": "Academic Search",
+    "sgw": "WeChat Search",
+    "gh": "GitHub Search",
+    "pm": "PubMed Search"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "theme": "Theme",
+    "themeAuto": "Auto",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "language": "Language",
+    "resultsPerPage": "Results per page",
+    "save": "Save",
+    "reset": "Reset"
+  },
+  "errors": {
+    "network": "Network error",
+    "timeout": "Request timeout",
+    "server": "Server error",
+    "notFound": "Not found",
+    "forbidden": "Forbidden",
+    "rateLimit": "Too many requests"
+  },
+  "footer": {
+    "poweredBy": "Powered by SearXNG",
+    "version": "Version",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  }
+}

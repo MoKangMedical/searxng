@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Sitemap: https://mokangmedical.github.io/searxng/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 1
+
+# Disallow admin/internal paths
+Disallow: /api/
+Disallow: /static/
+
+# Allow all documentation pages
+Allow: /*.html$
+Allow: /*.xml$

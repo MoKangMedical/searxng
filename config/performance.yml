@@ -1,0 +1,127 @@
+# SearXNG 性能优化配置
+
+# Redis缓存优化
+redis:
+  url: "redis://redis:6379/0"
+  cache_server: "redis://redis:6379/1"
+  expire: 86400  # 24小时缓存
+  max_connections: 100
+  socket_timeout: 5
+  socket_connect_timeout: 5
+
+# 搜索优化
+search:
+  concurrent_requests_per_engine: 5
+  max_request_timeout: 10.0
+  ban_time_on_fail: 5
+  max_ban_time_on_fail: 120
+  # 结果去重
+  deduplicate: true
+  # 结果排序
+  default_sort: "relevance"
+  # 结果限制
+  max_results_per_page: 20
+
+# 引擎优化
+engines:
+  # 引擎超时设置
+  timeout:
+    default: 5.0
+    baidu: 4.0
+    google: 3.0
+    bing: 3.0
+  
+  # 引擎重试设置
+  retry:
+    max_retries: 3
+    retry_delay: 1.0
+  
+  # 引擎并发控制
+  concurrency:
+    max_concurrent: 10
+    per_engine: 3
+
+# 网络优化
+network:
+  # 连接池
+  pool_connections: 100
+  pool_maxsize: 10
+  # 超时设置
+  connect_timeout: 5
+  read_timeout: 10
+  # 重试设置
+  max_retries: 3
+  backoff_factor: 0.3
+
+# 缓存策略
+cache:
+  # 内存缓存
+  memory:
+    enabled: true
+    max_size: 1000
+    ttl: 300  # 5分钟
+  
+  # Redis缓存
+  redis:
+    enabled: true
+    ttl: 86400  # 24小时
+    max_memory: "256mb"
+  
+  # 静态文件缓存
+  static:
+    enabled: true
+    max_age: 86400  # 24小时
+
+# 压缩配置
+compression:
+  enabled: true
+  min_length: 1000
+  types:
+    - "text/html"
+    - "text/css"
+    - "application/javascript"
+    - "application/json"
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "/var/log/searxng/access.log"
+  max_size: "100mb"
+  backup_count: 10
+
+# 监控配置
+monitoring:
+  # Prometheus指标
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+  
+  # 健康检查
+  health_check:
+    enabled: true
+    interval: 30
+    timeout: 5
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+  
+  # 告警规则
+  alerts:
+    # 响应时间告警
+    - name: "high_response_time"
+      condition: "response_time > 5"
+      severity: "warning"
+      message: "响应时间超过5秒"
+    
+    # 错误率告警
+    - name: "high_error_rate"
+      condition: "error_rate > 0.1"
+      severity: "critical"
+      message: "错误率超过10%"
+    
+    # 引擎故障告警
+    - name: "engine_failure"
+      condition: "engine_status == 'down'"
+      severity: "critical"
+      message: "搜索引擎故障"

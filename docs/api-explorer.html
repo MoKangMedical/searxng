@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Explorer - SearXNG Medical AI</title>
+    <meta name="description" content="Interactive API explorer for SearXNG Medical AI - test search endpoints in real-time">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#1a73e8;--secondary:#4285f4;--bg:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--text:#e6edf3;--text-secondary:#8b949e;--border:#30363d;--radius:12px;--green:#34a853;--red:#ea4335;--orange:#fbbc04}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+        .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:24px 0;position:sticky;top:0;z-index:1000}
+        .header .container{display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
+        .logo svg{width:36px;height:36px}
+        .logo-text{font-size:20px;font-weight:700}
+        .nav{display:flex;gap:28px}
+        .nav a{color:rgba(255,255,255,0.85);text-decoration:none;font-weight:500;font-size:14px}
+        .container{max-width:1100px;margin:0 auto;padding:0 20px}
+        .hero{padding:50px 0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;text-align:center}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:8px}
+        .hero p{font-size:16px;opacity:0.85}
+        .section{padding:30px 0}
+
+        /* Endpoint Card */
+        .endpoint{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:16px 0;overflow:hidden}
+        .endpoint-header{padding:16px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s}
+        .endpoint-header:hover{background:rgba(255,255,255,0.03)}
+        .method{padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;font-family:monospace;min-width:60px;text-align:center}
+        .method.get{background:rgba(52,168,83,0.15);color:var(--green)}
+        .method.post{background:rgba(26,115,232,0.15);color:var(--primary)}
+        .method.put{background:rgba(251,188,4,0.15);color:var(--orange)}
+        .method.delete{background:rgba(234,67,53,0.15);color:var(--red)}
+        .endpoint-path{font-family:monospace;font-size:15px;font-weight:600}
+        .endpoint-desc{font-size:13px;color:var(--text-secondary);margin-left:auto}
+        .endpoint-body{display:none;padding:20px;border-top:1px solid var(--border)}
+        .endpoint.open .endpoint-body{display:block}
+
+        /* Try It */
+        .try-section{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0}
+        .try-section h4{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-secondary)}
+        .try-row{display:flex;gap:12px;margin:12px 0;align-items:center}
+        .try-label{width:120px;font-size:13px;color:var(--text-secondary);text-align:right;flex-shrink:0}
+        .try-input{flex:1;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:14px;font-family:monospace}
+        .try-input:focus{outline:none;border-color:var(--primary)}
+        .try-btn{padding:10px 24px;background:var(--primary);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:14px;transition:all 0.2s}
+        .try-btn:hover{background:var(--secondary)}
+        .try-btn:disabled{opacity:0.5;cursor:not-allowed}
+        .try-result{margin-top:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+        .try-result-header{padding:10px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px}
+        .try-result-body{padding:16px;font-family:monospace;font-size:13px;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+
+        /* Schema */
+        .schema-table{width:100%;border-collapse:collapse;margin:12px 0}
+        .schema-table th,.schema-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+        .schema-table th{color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:11px}
+        .param-name{font-family:monospace;color:var(--green);font-weight:600}
+        .param-type{font-family:monospace;color:var(--orange);font-size:12px}
+        .param-required{color:var(--red);font-size:11px;font-weight:600}
+
+        /* Response codes */
+        .status-code{font-family:monospace;font-weight:700}
+        .status-2xx{color:var(--green)}
+        .status-4xx{color:var(--orange)}
+        .status-5xx{color:var(--red)}
+
+        /* Tabs */
+        .tabs{display:flex;gap:4px;margin-bottom:0;border-bottom:2px solid var(--border)}
+        .tab{padding:10px 20px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s}
+        .tab:hover{color:var(--text)}
+        .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+        /* Footer */
+        .footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:30px 0;margin-top:40px}
+        .footer .container{text-align:center;color:var(--text-secondary);font-size:13px}
+        .footer a{color:var(--primary);text-decoration:none}
+
+        @media(max-width:768px){.nav{display:none}.hero h1{font-size:28px}.try-row{flex-direction:column;align-items:stretch}.try-label{width:auto;text-align:left}}
+    </style>
+</head>
+<body>
+    <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2"/><path d="M12 6L6 9.5l6 3.5 6-3.5L12 6z" fill="#6366f1"/></svg>
+            OPC Ecosystem
+        </a>
+        <div style="display:flex;gap:4px;align-items:center">
+            <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Home</a>
+            <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Overview</a>
+            <a href="api-explorer.html" style="color:#fff;text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px;background:rgba(99,102,241,0.3)">API Explorer</a>
+            <a href="api-docs.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">API Docs</a>
+            <a href="https://github.com/MoKangMedical/searxng" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:12px;text-decoration:none">GitHub</a>
+        </div>
+    </nav>
+    <div style="height:48px"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="white" stroke-width="2"/><circle cx="20" cy="16" r="6" stroke="white" stroke-width="2"/><path d="M12 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">Overview</a>
+                <a href="api-explorer.html" style="color:white">API Explorer</a>
+                <a href="api-docs.html">API Docs</a>
+                <a href="playground.html">Playground</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>API Explorer</h1>
+            <p>Interactive API reference - test endpoints in real-time</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                <div>
+                    <h2 style="font-size:24px;font-weight:700">Endpoints</h2>
+                    <p style="color:var(--text-secondary);font-size:14px">Base URL: <code style="background:var(--bg-secondary);padding:2px 8px;border-radius:4px">http://localhost:8888</code></p>
+                </div>
+                <div style="display:flex;gap:8px">
+                    <span style="padding:6px 12px;background:rgba(52,168,83,0.15);color:var(--green);border-radius:6px;font-size:12px;font-weight:600">GET</span>
+                    <span style="padding:6px 12px;background:rgba(26,115,232,0.15);color:var(--primary);border-radius:6px;font-size:12px;font-weight:600">POST</span>
+                    <span style="padding:6px 12px;background:rgba(251,188,4,0.15);color:var(--orange);border-radius:6px;font-size:12px;font-weight:600">PUT</span>
+                </div>
+            </div>
+
+            <!-- Search Endpoint -->
+            <div class="endpoint open">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/search</span>
+                    <span class="endpoint-desc">Search across multiple engines</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Execute a search query across one or more search engines. Returns aggregated results.</p>
+
+                    <h4 style="font-size:14px;font-weight:600;margin-bottom:12px">Parameters</h4>
+                    <table class="schema-table">
+                        <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="param-name">q</span></td><td><span class="param-type">string</span></td><td><span class="param-required">required</span></td><td>Search query string</td></tr>
+                            <tr><td><span class="param-name">format</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Response format: html, json, csv, rss (default: html)</td></tr>
+                            <tr><td><span class="param-name">engines</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Comma-separated engine names (e.g., google,bing,arxiv)</td></tr>
+                            <tr><td><span class="param-name">categories</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Filter by category: general, images, videos, news, science, it</td></tr>
+                            <tr><td><span class="param-name">language</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Language code (e.g., en, zh-CN, auto)</td></tr>
+                            <tr><td><span class="param-name">pageno</span></td><td><span class="param-type">integer</span></td><td>optional</td><td>Page number for pagination (default: 1)</td></tr>
+                            <tr><td><span class="param-name">time_range</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Filter by time: day, week, month, year</td></tr>
+                            <tr><td><span class="param-name">safesearch</span></td><td><span class="param-type">integer</span></td><td>optional</td><td>Safe search level: 0, 1, 2</td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Try It Section -->
+                    <div class="try-section">
+                        <h4>Try It</h4>
+                        <div class="try-row">
+                            <span class="try-label">Query (q)</span>
+                            <input type="text" class="try-input" id="searchQ" value="rare disease treatment" placeholder="Enter search query">
+                        </div>
+                        <div class="try-row">
+                            <span class="try-label">Format</span>
+                            <select class="try-input" id="searchFormat" style="cursor:pointer">
+                                <option value="json">json</option>
+                                <option value="html">html</option>
+                                <option value="csv">csv</option>
+                                <option value="rss">rss</option>
+                            </select>
+                        </div>
+                        <div class="try-row">
+                            <span class="try-label">Engines</span>
+                            <input type="text" class="try-input" id="searchEngines" value="" placeholder="e.g., google,bing,arxiv (empty = all)">
+                        </div>
+                        <div class="try-row">
+                            <span class="try-label">Base URL</span>
+                            <input type="text" class="try-input" id="searchBase" value="http://localhost:8888" placeholder="http://localhost:8888">
+                        </div>
+                        <div style="text-align:right;margin-top:12px">
+                            <button class="try-btn" id="searchBtn" onclick="trySearch()">Send Request</button>
+                        </div>
+                        <div id="searchResult" class="try-result" style="display:none">
+                            <div class="try-result-header">
+                                <span><span class="status-code" id="searchStatus"></span> <span id="searchTime"></span></span>
+                                <span id="searchSize" style="color:var(--text-secondary)"></span>
+                            </div>
+                            <div class="try-result-body" id="searchBody"></div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size:14px;font-weight:600;margin:20px 0 12px">Response</h4>
+                    <div class="try-result">
+                        <div class="try-result-header"><span style="color:var(--green)">200 OK</span><span style="color:var(--text-secondary)">application/json</span></div>
+                        <div class="try-result-body">{
+  "query": "rare disease treatment",
+  "number_of_results": 42,
+  "results": [
+    {
+      "url": "https://example.com/rare-disease",
+      "title": "Rare Disease Treatment Overview",
+      "content": "Comprehensive guide to...",
+      "engine": "google",
+      "engines": ["google", "bing"],
+      "score": 15.0,
+      "category": "general"
+    }
+  ],
+  "unresponsive_engines": [
+    ["baidu", "CAPTCHA"]
+  ]
+}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Config Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/config</span>
+                    <span class="endpoint-desc">Get server configuration</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Returns the current SearXNG configuration including available engines, categories, and plugins.</p>
+                    <div class="try-section">
+                        <h4>Try It</h4>
+                        <div style="text-align:right;margin-top:12px">
+                            <button class="try-btn" onclick="tryConfig()">Send Request</button>
+                        </div>
+                        <div id="configResult" class="try-result" style="display:none">
+                            <div class="try-result-header">
+                                <span><span class="status-code" id="configStatus"></span></span>
+                                <span id="configSize" style="color:var(--text-secondary)"></span>
+                            </div>
+                            <div class="try-result-body" id="configBody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autocomplete Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/autocompleter</span>
+                    <span class="endpoint-desc">Get search suggestions</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Returns autocomplete suggestions for a partial query. Uses the configured autocomplete provider (Google, Baidu, DuckDuckGo).</p>
+                    <table class="schema-table">
+                        <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="param-name">q</span></td><td><span class="param-type">string</span></td><td><span class="param-required">required</span></td><td>Partial query string</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="try-section">
+                        <h4>Try It</h4>
+                        <div class="try-row">
+                            <span class="try-label">Query</span>
+                            <input type="text" class="try-input" id="acQ" value="rare dis" placeholder="Partial query">
+                        </div>
+                        <div style="text-align:right;margin-top:12px">
+                            <button class="try-btn" onclick="tryAutocomplete()">Send Request</button>
+                        </div>
+                        <div id="acResult" class="try-result" style="display:none">
+                            <div class="try-result-header">
+                                <span><span class="status-code" id="acStatus"></span></span>
+                            </div>
+                            <div class="try-result-body" id="acBody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/healthz</span>
+                    <span class="endpoint-desc">Health check endpoint</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Returns server health status. Used by load balancers and monitoring systems.</p>
+                    <div class="try-result">
+                        <div class="try-result-header"><span style="color:var(--green)">200 OK</span></div>
+                        <div class="try-result-body">{
+  "status": "healthy",
+  "version": "2024.12.26",
+  "uptime": "4h 23m"
+}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engines Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/engines</span>
+                    <span class="endpoint-desc">List available engines</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Returns a list of all configured search engines with their status and categories.</p>
+                    <div class="try-result">
+                        <div class="try-result-header"><span style="color:var(--green)">200 OK</span></div>
+                        <div class="try-result-body">[
+  {"name": "google", "categories": ["general"], "enabled": true},
+  {"name": "baidu", "categories": ["general"], "enabled": true},
+  {"name": "bing", "categories": ["general"], "enabled": true},
+  {"name": "google_scholar", "categories": ["science"], "enabled": true},
+  {"name": "arxiv", "categories": ["science"], "enabled": true},
+  {"name": "github", "categories": ["it"], "enabled": true}
+]</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST Search (alternative) -->
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/search</span>
+                    <span class="endpoint-desc">Search via POST (for long queries)</span>
+                </div>
+                <div class="endpoint-body">
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">Same as GET /search but accepts parameters as form data. Useful for very long queries that exceed URL length limits.</p>
+                    <h4 style="font-size:14px;font-weight:600;margin-bottom:12px">Request Body</h4>
+                    <table class="schema-table">
+                        <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="param-name">q</span></td><td><span class="param-type">string</span></td><td><span class="param-required">required</span></td><td>Search query</td></tr>
+                            <tr><td><span class="param-name">format</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Response format</td></tr>
+                            <tr><td><span class="param-name">engines</span></td><td><span class="param-type">string</span></td><td>optional</td><td>Engine selection</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="try-result">
+                        <div class="try-result-header"><span style="color:var(--primary)">Content-Type</span><span style="color:var(--text-secondary)">application/x-www-form-urlencoded</span></div>
+                        <div class="try-result-body">q=rare+disease+treatment&format=json&engines=google,bing</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Responses -->
+            <div style="margin-top:40px">
+                <h3 style="font-size:18px;font-weight:700;margin-bottom:16px">Error Responses</h3>
+                <table class="schema-table">
+                    <thead><tr><th>Status</th><th>Description</th><th>Solution</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="status-code status-4xx">400</span></td><td>Missing or invalid query parameter</td><td>Ensure 'q' parameter is provided</td></tr>
+                        <tr><td><span class="status-code status-4xx">403</span></td><td>JSON API disabled</td><td>Add search.formats: [json] to settings.yml</td></tr>
+                        <tr><td><span class="status-code status-4xx">429</span></td><td>Rate limit exceeded</td><td>Wait and retry; check limiter config</td></tr>
+                        <tr><td><span class="status-code status-5xx">500</span></td><td>Server error</td><td>Check docker logs searxng</td></tr>
+                        <tr><td><span class="status-code status-5xx">502</span></td><td>Upstream engine error</td><td>Engine may be down; try different engines</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>2024-2026 MoKangMedical. SearXNG Medical AI API Explorer.</p>
+            <p style="margin-top:8px">
+                <a href="api-docs.html">Full API Docs</a> |
+                <a href="playground.html">Playground</a> |
+                <a href="faq.html">FAQ</a> |
+                <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+    async function trySearch() {
+        const q = document.getElementById('searchQ').value;
+        const format = document.getElementById('searchFormat').value;
+        const engines = document.getElementById('searchEngines').value;
+        const base = document.getElementById('searchBase').value;
+        const btn = document.getElementById('searchBtn');
+        const result = document.getElementById('searchResult');
+
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        result.style.display = 'block';
+        document.getElementById('searchBody').textContent = 'Loading...';
+        document.getElementById('searchStatus').textContent = '';
+        document.getElementById('searchTime').textContent = '';
+        document.getElementById('searchSize').textContent = '';
+
+        try {
+            let url = `${base}/search?q=${encodeURIComponent(q)}&format=${format}`;
+            if (engines) url += `&engines=${engines}`;
+
+            const start = Date.now();
+            const resp = await fetch(url);
+            const elapsed = Date.now() - start;
+            const text = await resp.text();
+
+            const statusEl = document.getElementById('searchStatus');
+            statusEl.textContent = `${resp.status} ${resp.statusText}`;
+            statusEl.className = `status-code ${resp.status < 400 ? 'status-2xx' : 'status-4xx'}`;
+
+            document.getElementById('searchTime').textContent = `${elapsed}ms`;
+            document.getElementById('searchSize').textContent = `${(text.length/1024).toFixed(1)} KB`;
+
+            try {
+                document.getElementById('searchBody').textContent = JSON.stringify(JSON.parse(text), null, 2);
+            } catch {
+                document.getElementById('searchBody').textContent = text.substring(0, 2000);
+            }
+        } catch (err) {
+            document.getElementById('searchStatus').textContent = 'Error';
+            document.getElementById('searchStatus').className = 'status-code status-5xx';
+            document.getElementById('searchBody').textContent = `Connection failed: ${err.message}\n\nMake sure SearXNG is running:\ncd ~/.docker/searxng && docker compose up -d`;
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Send Request';
+    }
+
+    async function tryConfig() {
+        const result = document.getElementById('configResult');
+        result.style.display = 'block';
+        document.getElementById('configBody').textContent = 'Loading...';
+        try {
+            const resp = await fetch('http://localhost:8888/config');
+            const data = await resp.json();
+            document.getElementById('configStatus').textContent = `${resp.status} OK`;
+            document.getElementById('configStatus').className = 'status-code status-2xx';
+            document.getElementById('configBody').textContent = JSON.stringify(data, null, 2).substring(0, 3000);
+        } catch (err) {
+            document.getElementById('configStatus').textContent = 'Error';
+            document.getElementById('configBody').textContent = `Connection failed: ${err.message}`;
+        }
+    }
+
+    async function tryAutocomplete() {
+        const q = document.getElementById('acQ').value;
+        const result = document.getElementById('acResult');
+        result.style.display = 'block';
+        document.getElementById('acBody').textContent = 'Loading...';
+        try {
+            const resp = await fetch(`http://localhost:8888/autocompleter?q=${encodeURIComponent(q)}`);
+            const data = await resp.json();
+            document.getElementById('acStatus').textContent = `${resp.status} OK`;
+            document.getElementById('acStatus').className = 'status-code status-2xx';
+            document.getElementById('acBody').textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+            document.getElementById('acStatus').textContent = 'Error';
+            document.getElementById('acBody').textContent = `Connection failed: ${err.message}`;
+        }
+    }
+    </script>
+</body>
+</html>

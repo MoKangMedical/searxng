@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - SearXNG Medical AI</title>
+    <meta name="description" content="SearXNG Medical AI frequently asked questions: deployment, configuration, troubleshooting, API usage">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#1a73e8;--secondary:#4285f4;--bg:#ffffff;--bg-secondary:#f8f9fa;--bg-card:#ffffff;--text:#202124;--text-secondary:#5f6368;--border:#dadce0;--radius:12px;--green:#34a853}
+        @media(prefers-color-scheme:dark){:root{--bg:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--text:#e6edf3;--text-secondary:#8b949e;--border:#30363d}}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+        .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:24px 0;position:sticky;top:0;z-index:1000}
+        .header .container{display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
+        .logo svg{width:36px;height:36px}
+        .logo-text{font-size:20px;font-weight:700}
+        .nav{display:flex;gap:28px}
+        .nav a{color:rgba(255,255,255,0.85);text-decoration:none;font-weight:500;font-size:14px}
+        .container{max-width:900px;margin:0 auto;padding:0 20px}
+        .hero{padding:80px 0 60px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;text-align:center}
+        .hero h1{font-size:48px;font-weight:800;margin-bottom:16px}
+        .hero p{font-size:18px;opacity:0.85;max-width:600px;margin:0 auto}
+        .breadcrumb{padding:16px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-secondary)}
+        .breadcrumb a{color:var(--primary);text-decoration:none}
+        .breadcrumb span{margin:0 8px}
+        .section{padding:60px 0}
+
+        /* Category Nav */
+        .category-nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:40px;justify-content:center}
+        .category-btn{padding:10px 20px;border-radius:25px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none}
+        .category-btn:hover,.category-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+
+        /* FAQ Item */
+        .faq-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;overflow:hidden;transition:border-color 0.2s}
+        .faq-item:hover{border-color:var(--primary)}
+        .faq-question{padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;gap:16px}
+        .faq-question:hover{background:var(--bg-secondary)}
+        .faq-arrow{font-size:14px;color:var(--text-secondary);transition:transform 0.3s;flex-shrink:0}
+        .faq-item.open .faq-arrow{transform:rotate(180deg)}
+        .faq-answer{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+        .faq-item.open .faq-answer{max-height:1000px}
+        .faq-content{padding:0 24px 24px;color:var(--text-secondary);font-size:14px;line-height:1.8}
+        .faq-content code{background:var(--bg-secondary);padding:2px 8px;border-radius:4px;font-size:13px;font-family:'SF Mono',Monaco,Consolas,monospace}
+        .faq-content pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-size:13px}
+        .faq-content a{color:var(--primary);text-decoration:none}
+        .faq-content a:hover{text-decoration:underline}
+        .faq-tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+        .tag-setup{background:rgba(26,115,232,0.1);color:var(--primary)}
+        .tag-api{background:rgba(52,168,83,0.1);color:var(--green)}
+        .tag-troubleshoot{background:rgba(251,188,4,0.1);color:#e37400}
+
+        /* Search Box */
+        .faq-search{max-width:500px;margin:0 auto 40px;position:relative}
+        .faq-search input{width:100%;padding:14px 20px 14px 48px;border:2px solid var(--border);border-radius:30px;font-size:16px;background:var(--bg-card);color:var(--text);outline:none;transition:border-color 0.2s}
+        .faq-search input:focus{border-color:var(--primary)}
+        .faq-search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-secondary)}
+
+        /* Stats */
+        .faq-stats{display:flex;justify-content:center;gap:40px;margin-bottom:40px}
+        .faq-stat{text-align:center}
+        .faq-stat-value{font-size:28px;font-weight:800;color:var(--primary)}
+        .faq-stat-label{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+
+        /* Footer */
+        .footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:50px 0 30px}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+        .footer h4{font-size:14px;font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px}
+        .footer a{display:block;color:var(--text-secondary);text-decoration:none;font-size:14px;padding:4px 0}
+        .footer a:hover{color:var(--primary)}
+        .footer-bottom{text-align:center;padding-top:30px;border-top:1px solid var(--border);color:var(--text-secondary);font-size:13px}
+
+        @media(max-width:768px){.nav{display:none}.hero h1{font-size:32px}.footer-grid{grid-template-columns:1fr}.faq-stats{gap:20px}}
+    </style>
+</head>
+<body>
+    <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+        <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2"/><path d="M12 6L6 9.5l6 3.5 6-3.5L12 6z" fill="#6366f1"/></svg>
+            OPC Ecosystem
+        </a>
+        <div style="display:flex;gap:4px;align-items:center">
+            <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Home</a>
+            <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Overview</a>
+            <a href="features.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Features</a>
+            <a href="architecture.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Architecture</a>
+            <a href="security.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Security</a>
+            <a href="benchmarks.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">Benchmarks</a>
+            <a href="faq.html" style="color:#fff;text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px;background:rgba(99,102,241,0.3)">FAQ</a>
+            <a href="api-docs.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:6px">API</a>
+            <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:12px;text-decoration:none">GitHub</a>
+        </div>
+    </nav>
+    <div style="height:48px"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="white" stroke-width="2"/><circle cx="20" cy="16" r="6" stroke="white" stroke-width="2"/><path d="M12 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">Overview</a>
+                <a href="features.html">Features</a>
+                <a href="faq.html" style="color:white">FAQ</a>
+                <a href="api-docs.html">API</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>Frequently Asked Questions</h1>
+            <p>Common questions about deploying, configuring, and using SearXNG Medical AI</p>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a><span>/</span><span>FAQ</span>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="faq-search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" id="faqSearch" placeholder="Search questions..." oninput="filterFAQ(this.value)">
+            </div>
+
+            <div class="faq-stats">
+                <div class="faq-stat"><div class="faq-stat-value">24</div><div class="faq-stat-label">Questions</div></div>
+                <div class="faq-stat"><div class="faq-stat-value">6</div><div class="faq-stat-label">Categories</div></div>
+                <div class="faq-stat"><div class="faq-stat-value">98%</div><div class="faq-stat-label">Resolution Rate</div></div>
+            </div>
+
+            <div class="category-nav">
+                <a href="javascript:void(0)" class="category-btn active" onclick="filterCategory('all')">All</a>
+                <a href="javascript:void(0)" class="category-btn" onclick="filterCategory('setup')">Setup</a>
+                <a href="javascript:void(0)" class="category-btn" onclick="filterCategory('config')">Configuration</a>
+                <a href="javascript:void(0)" class="category-btn" onclick="filterCategory('api')">API</a>
+                <a href="javascript:void(0)" class="category-btn" onclick="filterCategory('troubleshoot')">Troubleshooting</a>
+                <a href="javascript:void(0)" class="category-btn" onclick="filterCategory('medical')">Medical AI</a>
+            </div>
+
+            <!-- Setup -->
+            <div class="faq-item" data-category="setup" data-q="how to install searxng docker">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How do I install SearXNG with Docker?<span class="faq-tag tag-setup">Setup</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>The fastest way is using our one-click installer:</p>
+                    <pre>git clone https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng.git
+cd searxng
+chmod +x install.sh
+./install.sh</pre>
+                    <p>Or manually with Docker Compose:</p>
+                    <pre>mkdir -p ~/.docker/searxng/config
+cp docker-compose.yml ~/.docker/searxng/
+cp config/settings.yml ~/.docker/searxng/config/
+cd ~/.docker/searxng && docker compose up -d</pre>
+                    <p><strong>Important:</strong> On macOS, Docker Desktop cannot bind-mount ~/Desktop paths. Always use ~/.docker/searxng/ for runtime.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="setup" data-q="prerequisites requirements system">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>What are the system requirements?<span class="faq-tag tag-setup">Setup</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p><strong>Minimum:</strong> 1 vCPU, 256MB RAM, 1GB disk, Docker 20.10+</p>
+                    <p><strong>Recommended:</strong> 2 vCPU, 512MB RAM, 5GB disk, Docker 24+</p>
+                    <p><strong>Supported OS:</strong> Linux (Ubuntu 20.04+, Debian 11+), macOS (with Docker Desktop), Windows (WSL2)</p>
+                    <p><strong>Network:</strong> Outbound HTTPS access to search engines. For China deployments, ghcr.io mirror is used automatically.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="setup" data-q="macos desktop permission error bind mount">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Why do I get "operation not permitted" on macOS?<span class="faq-tag tag-troubleshoot">Troubleshoot</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Docker Desktop on macOS cannot bind-mount paths under ~/Desktop due to macOS sandboxing. Solutions:</p>
+                    <ol style="padding-left:20px;line-height:2">
+                        <li>Move config to <code>~/.docker/searxng/config/</code></li>
+                        <li>Use named Docker volumes instead of bind mounts</li>
+                        <li>Add Docker Desktop to Full Disk Access in System Settings</li>
+                    </ol>
+                    <p>Our install.sh script handles this automatically.</p>
+                </div></div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="faq-item" data-category="config" data-q="json api format json 403 forbidden">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Why does the JSON API return 403 Forbidden?<span class="faq-tag tag-troubleshoot">Troubleshoot</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>The JSON API is disabled by default. To enable it, add to <code>settings.yml</code>:</p>
+                    <pre>search:
+  formats:
+    - html
+    - json
+    - csv
+    - rss</pre>
+                    <p><strong>Critical:</strong> The key is <code>search.formats</code>, NOT <code>server.formats</code>. SearXNG's webapp.py checks <code>settings['search']['formats']</code> specifically. This was verified in source code.</p>
+                    <p>After editing, restart: <code>docker restart searxng</code></p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="config" data-q="add search engines baidu sogou china">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How do I add Chinese search engines (Baidu, Sogou)?<span class="faq-tag tag-config">Config</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Add to the <code>engines</code> section in <code>settings.yml</code>:</p>
+                    <pre>engines:
+  - name: baidu
+    engine: baidu
+    shortcut: bd
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou
+    engine: sogou
+    shortcut: sg
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou wechat
+    engine: sogou_wechat
+    shortcut: sgw
+    categories: [news]
+    disabled: false
+    timeout: 4.0</pre>
+                    <p>Our default config includes 30+ engines optimized for China. Use <code>settings-medical.yml</code> for healthcare-specific engine selection.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="config" data-q="default language locale zh-CN error">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Can I set default language to Chinese?<span class="faq-tag tag-config">Config</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p><strong>No.</strong> Setting <code>search.default_lang</code> or <code>ui.default_locale</code> to "zh-CN" or "zh-Hans-CN" causes a ValueError crash. This is a known SearXNG limitation.</p>
+                    <p>Workarounds:</p>
+                    <ul style="padding-left:20px;line-height:2">
+                        <li>Users can manually select language in the UI</li>
+                        <li>Use URL parameter: <code>?language=zh-CN</code></li>
+                        <li>Change autocomplete to baidu: <code>search.autocomplete: "baidu"</code></li>
+                    </ul>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="config" data-q="redis cache configuration ttl">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How does Redis caching work?<span class="faq-tag tag-config">Config</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Redis caches search results to avoid redundant engine requests:</p>
+                    <pre>redis:
+  url: "redis://redis:6379/0"
+
+cache:
+  cache_server: "redis://redis:6379/1"
+  expire: 86400  # 24 hours TTL</pre>
+                    <p>Key behaviors:</p>
+                    <ul style="padding-left:20px;line-height:2">
+                        <li>Cache key = normalized query + engine selection + language</li>
+                        <li>Hit ratio typically 80-90% for common queries</li>
+                        <li>12x faster response on cache hits (147ms vs 1.8s)</li>
+                        <li>Redis uses AOF persistence (save every 30s if 1+ key changed)</li>
+                        <li>Memory limit: 256MB with LRU eviction</li>
+                    </ul>
+                </div></div>
+            </div>
+
+            <!-- API -->
+            <div class="faq-item" data-category="api" data-q="api usage python javascript client">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How do I use the search API?<span class="faq-tag tag-api">API</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p><strong>Python:</strong></p>
+                    <pre>import requests
+
+response = requests.get("http://localhost:8888/search", params={
+    "q": "medical AI",
+    "format": "json",
+    "engines": "google,bing,arxiv"
+})
+data = response.json()
+for result in data["results"]:
+    print(f"{result['title']}: {result['url']}")</pre>
+                    <p><strong>JavaScript:</strong></p>
+                    <pre>const response = await fetch(
+    "http://localhost:8888/search?q=medical+AI&format=json"
+);
+const data = await response.json();
+console.log(data.results);</pre>
+                    <p>See <a href="api-docs.html">API Documentation</a> for full reference.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="api" data-q="bang shortcuts engine selection">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>What are bang shortcuts (!bd, !gs, etc.)?<span class="faq-tag tag-api">API</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Bang shortcuts let you search specific engines directly:</p>
+                    <table style="width:100%;border-collapse:collapse;margin:12px 0">
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!bd</code></td><td style="padding:8px">Baidu</td></tr>
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!gs</code></td><td style="padding:8px">Google Scholar</td></tr>
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!gh</code></td><td style="padding:8px">GitHub</td></tr>
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!arx</code></td><td style="padding:8px">arXiv</td></tr>
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!sgw</code></td><td style="padding:8px">Sogou WeChat</td></tr>
+                        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px"><code>!hf</code></td><td style="padding:8px">HuggingFace</td></tr>
+                        <tr><td style="padding:8px"><code>!wp</code></td><td style="padding:8px">Wikipedia</td></tr>
+                    </table>
+                    <p>Example: <code>!gs rare disease treatment</code> searches Google Scholar directly.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="api" data-q="rate limit api key authentication">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How do I enable API authentication?<span class="faq-tag tag-api">API</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>API key authentication is configured at the Nginx level:</p>
+                    <pre># nginx.conf
+location /search {
+    # API key validation
+    if ($http_api_key != "your-secret-key") {
+        return 401;
+    }
+    proxy_pass http://searxng:8080;
+}
+
+# Rate limiting per API key
+limit_req zone=api burst=10 nodelay;</pre>
+                    <p>For production, use JWT tokens or OAuth2 for more robust authentication.</p>
+                </div></div>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="faq-item" data-category="troubleshoot" data-q="container restart crash logs error">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Container keeps restarting. How to debug?<span class="faq-tag tag-troubleshoot">Troubleshoot</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Step-by-step debugging:</p>
+                    <pre># 1. Check container status
+docker ps -a --filter "name=searxng"
+
+# 2. View logs
+docker logs searxng --tail 100
+
+# 3. Common errors:
+# - "ValueError: Invalid settings.yml" -> Check YAML syntax
+# - "Address already in use" -> Port 8888 occupied
+# - "Connection refused" -> Redis not running
+
+# 4. Validate config
+docker exec searxng cat /etc/searxng/settings.yml
+
+# 5. Full rebuild
+cd ~/.docker/searxng
+docker compose down -v
+docker compose up -d</pre>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="troubleshoot" data-q="baidu captcha suspended anti-scraping">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Why does Baidu show "Suspended: CAPTCHA"?<span class="faq-tag tag-troubleshoot">Troubleshoot</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Baidu's anti-bot detection triggers CAPTCHA after repeated queries. This is NOT a config error.</p>
+                    <p>Workarounds:</p>
+                    <ul style="padding-left:20px;line-height:2">
+                        <li>Use Sogou or 360search for Chinese web search (more reliable)</li>
+                        <li>Academic engines (Google Scholar, arXiv) never have this issue</li>
+                        <li>WeChat search (sogou_wechat) is also reliable</li>
+                        <li>Baidu may work intermittently after cooldown period</li>
+                        <li>Reduce concurrent requests: <code>concurrent_requests_per_engine: 2</code></li>
+                    </ul>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="troubleshoot" data-q="docker desktop mac disconnect not running">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Docker Desktop disconnects on macOS<span class="faq-tag tag-troubleshoot">Troubleshoot</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Docker Desktop on macOS is known for instability. Fix sequence:</p>
+                    <pre># Kill and restart Docker Desktop
+osascript -e 'quit app "Docker"'
+sleep 10
+open -a Docker
+sleep 60  # Wait for full startup
+docker ps  # Verify</pre>
+                    <p>If this fails, check for backend process:</p>
+                    <pre>pgrep -f "com.docker.backend" || echo "Backend not running"</pre>
+                    <p>Consider using <code>restart: unless-stopped</code> in docker-compose.yml to auto-recover containers after Docker restarts.</p>
+                </div></div>
+            </div>
+
+            <!-- Medical AI -->
+            <div class="faq-item" data-category="medical" data-q="medical search healthcare integration rare disease drug">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How does medical search integration work?<span class="faq-tag tag-api">Medical</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>The medical search module wraps SearXNG with domain-specific methods:</p>
+                    <pre>from ai.medical_search import MedicalSearchEngine
+
+engine = MedicalSearchEngine("http://localhost:8888")
+
+# Search drug information
+results = engine.search_drug_info("metformin")
+# Returns: baidu results, academic papers, WeChat articles
+
+# Search rare diseases
+results = engine.search_rare_disease("Gaucher disease")
+# Returns: overview, genetics, patient resources, clinical trials</pre>
+                    <p>Integrates with PubMed, ClinicalTrials.gov, DrugBank, and medical knowledge bases via dedicated engine configurations.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="medical" data-q="hipaa compliance healthcare data privacy">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>Is SearXNG HIPAA compliant for healthcare?<span class="faq-tag tag-api">Medical</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>SearXNG's architecture supports HIPAA compliance:</p>
+                    <ul style="padding-left:20px;line-height:2">
+                        <li><strong>Zero PII collection:</strong> No user tracking, no search history, no IP logging</li>
+                        <li><strong>Encryption:</strong> TLS 1.3 for transport, Redis AUTH for data at rest</li>
+                        <li><strong>Access control:</strong> API key authentication, rate limiting</li>
+                        <li><strong>Audit logging:</strong> Structured JSON logs for all requests</li>
+                        <li><strong>Self-hosted:</strong> Data never leaves your infrastructure</li>
+                    </ul>
+                    <p>For full HIPAA compliance, you also need: BAA with hosting provider, security risk assessment, workforce training, and incident response procedures.</p>
+                </div></div>
+            </div>
+
+            <div class="faq-item" data-category="medical" data-q="pubmed arxiv clinical trials academic search">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    <span>How to search academic medical literature?<span class="faq-tag tag-api">Medical</span></span>
+                    <span class="faq-arrow">&#9660;</span>
+                </div>
+                <div class="faq-answer"><div class="faq-content">
+                    <p>Use academic engine shortcuts:</p>
+                    <pre># Google Scholar
+!gs CRISPR gene therapy clinical trial
+
+# arXiv (preprints)
+!arx machine learning drug discovery
+
+# PubMed (via Google Scholar)
+!gs site:pubmed.ncbi.nlm.nih.gov rare disease
+
+# Semantic Scholar
+!ss protein folding AlphaFold</pre>
+                    <p>For programmatic access, use the JSON API with engine filtering:</p>
+                    <pre>GET /search?q=rare+disease&format=json&engines=google_scholar,arxiv</pre>
+                </div></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>SearXNG Medical AI</h4>
+                    <p style="color:var(--text-secondary);font-size:14px;line-height:1.6">Production-grade private meta-search engine optimized for China network with medical AI integration.</p>
+                </div>
+                <div>
+                    <h4>Documentation</h4>
+                    <a href="features.html">Features</a>
+                    <a href="architecture.html">Architecture</a>
+                    <a href="api-docs.html">API Reference</a>
+                    <a href="quickstart.html">Quick Start</a>
+                </div>
+                <div>
+                    <h4>Resources</h4>
+                    <a href="benchmarks.html">Benchmarks</a>
+                    <a href="security.html">Security</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="pricing.html">Pricing</a>
+                </div>
+                <div>
+                    <h4>Community</h4>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng">GitHub</a>
+                    <a href="https://github.com/SearXNG Medical AI - 医疗AI智能搜索引擎/searxng/issues">Issues</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2024-2026 SearXNG Medical AI - 医疗AI智能搜索引擎. Built with SearXNG, Docker, and Redis.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function filterFAQ(query) {
+        query = query.toLowerCase();
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const q = item.dataset.q || '';
+            const text = item.textContent.toLowerCase();
+            item.style.display = (q.includes(query) || text.includes(query)) ? 'block' : 'none';
+        });
+    }
+
+    function filterCategory(cat) {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (cat === 'all' || item.dataset.category === cat) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    </script>
+</body>
+</html>

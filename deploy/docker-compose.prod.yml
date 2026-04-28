@@ -1,0 +1,62 @@
+# SearXNG 生产环境 Docker Compose
+version: '3.8'
+
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng-prod
+    restart: always
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - ./config:/etc/searxng:rw
+      - ./logs:/var/log/searxng:rw
+    environment:
+      - SEARXNG_SECRET=${SEARXNG_SECRET}
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+    networks:
+      - searxng
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: searxng-redis-prod
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - searxng
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: searxng-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - searxng
+    networks:
+      - searxng
+
+networks:
+  searxng:
+    driver: bridge
+
+volumes:
+  redis-data:
