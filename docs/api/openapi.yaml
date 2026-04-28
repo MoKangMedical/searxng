@@ -1,0 +1,247 @@
+openapi: 3.0.3
+info:
+  title: SearXNG Medical AI API
+  description: |
+    医疗AI智能搜索引擎API接口
+    
+    ## 功能特性
+    - 多源聚合搜索
+    - 医疗专业搜索引擎
+    - JSON格式返回
+    - 速率限制保护
+    
+    ## 认证方式
+    - API Key认证
+    - 查询参数认证
+    
+    ## 使用限制
+    - 免费版：60请求/分钟
+    - 专业版：600请求/分钟
+    - 企业版：无限制
+  version: 3.1.0
+  contact:
+    name: OPC团队
+    url: https://github.com/MoKangMedical/searxng
+    email: contact@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8888
+    description: 本地开发环境
+  - url: https://search.example.com
+    description: 生产环境
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /search:
+    get:
+      summary: 搜索
+      description: 执行搜索查询
+      operationId: search
+      tags:
+        - 搜索
+      parameters:
+        - name: q
+          in: query
+          description: 搜索查询
+          required: true
+          schema:
+            type: string
+            example: "医疗AI"
+        - name: format
+          in: query
+          description: 返回格式
+          schema:
+            type: string
+            enum: [json, csv, rss, html]
+            default: json
+        - name: engines
+          in: query
+          description: 搜索引擎列表（逗号分隔）
+          schema:
+            type: string
+            example: "baidu,google"
+        - name: language
+          in: query
+          description: 搜索语言
+          schema:
+            type: string
+            example: "zh-CN"
+        - name: pageno
+          in: query
+          description: 页码
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: time_range
+          in: query
+          description: 时间范围
+          schema:
+            type: string
+            enum: [day, week, month, year]
+        - name: safe_search
+          in: query
+          description: 安全搜索级别
+          schema:
+            type: integer
+            enum: [0, 1, 2]
+            default: 0
+        - name: categories
+          in: query
+          description: 搜索分类
+          schema:
+            type: string
+            example: "general"
+      responses:
+        '200':
+          description: 搜索成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: 请求参数错误
+        '401':
+          description: 未认证
+        '403':
+          description: 无权限
+        '429':
+          description: 请求过于频繁
+        '500':
+          description: 服务器内部错误
+
+  /config:
+    get:
+      summary: 获取配置
+      description: 获取搜索引擎配置信息
+      operationId: getConfig
+      tags:
+        - 系统
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+
+  /stats:
+    get:
+      summary: 获取统计
+      description: 获取搜索引擎使用统计
+      operationId: getStats
+      tags:
+        - 系统
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    SearchResponse:
+      type: object
+      properties:
+        query:
+          type: string
+          description: 搜索查询
+        number_of_results:
+          type: integer
+          description: 结果总数
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+        answers:
+          type: array
+          items:
+            type: string
+        corrections:
+          type: array
+          items:
+            type: string
+        infoboxes:
+          type: array
+          items:
+            type: object
+        suggestions:
+          type: array
+          items:
+            type: string
+
+    SearchResult:
+      type: object
+      properties:
+        url:
+          type: string
+          description: 结果URL
+        title:
+          type: string
+          description: 结果标题
+        content:
+          type: string
+          description: 结果摘要
+        engine:
+          type: string
+          description: 来源引擎
+        engines:
+          type: array
+          items:
+            type: string
+        score:
+          type: number
+          description: 相关性分数
+        category:
+          type: string
+          description: 结果分类
+        thumbnail:
+          type: string
+          description: 缩略图URL
+
+    ConfigResponse:
+      type: object
+      properties:
+        autocomplete:
+          type: string
+        brand:
+          type: object
+        categories:
+          type: array
+          items:
+            type: string
+        engines:
+          type: array
+          items:
+            type: object
+
+    StatsResponse:
+      type: object
+      properties:
+        engines:
+          type: object
+        queries:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 错误信息
+        code:
+          type: integer
+          description: 错误代码

@@ -455,7 +455,7 @@
     <!-- Header -->
     <header class="header">
         <div class="container">
-            <a href="#" class="logo">
+            <a href="javascript:void(0)" class="logo">
                 <svg viewBox="0 0 100 100" fill="none">
                     <circle cx="50" cy="50" r="45" fill="white" opacity="0.2"/>
                     <path d="M50 20L20 35l30 15 30-15z" fill="white"/>
@@ -633,29 +633,29 @@
                     <h4>产品</h4>
                     <a href="#features">功能特性</a>
                     <a href="#pricing">定价方案</a>
-                    <a href="#">文档</a>
-                    <a href="#">更新日志</a>
+                    <a href="docs.html">文档</a>
+                    <a href="javascript:void(0)">更新日志</a>
                 </div>
                 <div>
                     <h4>资源</h4>
-                    <a href="#">API文档</a>
-                    <a href="#">使用指南</a>
-                    <a href="#">示例代码</a>
-                    <a href="#">博客</a>
+                    <a href="docs.html">API文档</a>
+                    <a href="docs.html">使用指南</a>
+                    <a href="javascript:void(0)">示例代码</a>
+                    <a href="blog.html">博客</a>
                 </div>
                 <div>
                     <h4>社区</h4>
                     <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
-                    <a href="#">Discord</a>
-                    <a href="#">讨论区</a>
-                    <a href="#">贡献指南</a>
+                    <a href="javascript:void(0)">Discord</a>
+                    <a href="javascript:void(0)">讨论区</a>
+                    <a href="docs.html">贡献指南</a>
                 </div>
                 <div>
                     <h4>公司</h4>
-                    <a href="#">关于我们</a>
-                    <a href="#">联系方式</a>
-                    <a href="#">隐私政策</a>
-                    <a href="#">服务条款</a>
+                    <a href="about.html">关于我们</a>
+                    <a href="contact.html">联系方式</a>
+                    <a href="javascript:void(0)">隐私政策</a>
+                    <a href="javascript:void(0)">服务条款</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -663,5 +663,68 @@
             </div>
         </div>
     </footer>
+
+<!-- OPC Eco Nav -->
+<div style="position:fixed;bottom:20px;right:20px;z-index:99;background:rgba(17,24,39,.95);backdrop-filter:blur(10px);border:1px solid #1e293b;border-radius:12px;padding:12px;box-shadow:0 10px 40px rgba(0,0,0,.4);max-width:200px">
+<div style="font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05rem;padding:4px 8px;border-bottom:1px solid #1e293b;margin-bottom:6px">OPC Ecosystem</div>
+<a href="https://mokangmedical.github.io/opc-homepage/" style="display:block;padding:3px 8px;color:#94a3b8;font-size:.78rem;text-decoration:none;border-radius:4px;transition:all .2s">🏠 OPC Home</a>
+<a href="https://mokangmedical.github.io/DrugMind/" style="display:block;padding:3px 8px;color:#94a3b8;font-size:.78rem;text-decoration:none;border-radius:4px;transition:all .2s">💊 DrugMind</a>
+<a href="https://mokangmedical.github.io/PharmaSim/" style="display:block;padding:3px 8px;color:#94a3b8;font-size:.78rem;text-decoration:none;border-radius:4px;transition:all .2s">🧪 PharmaSim</a>
+<a href="https://mokangmedical.github.io/medichat-rd/" style="display:block;padding:3px 8px;color:#94a3b8;font-size:.78rem;text-decoration:none;border-radius:4px;transition:all .2s">🏥 MediChat-RD</a>
+<a href="https://mokangmedical.github.io/tianyan/" style="display:block;padding:3px 8px;color:#94a3b8;font-size:.78rem;text-decoration:none;border-radius:4px;transition:all .2s">👁️ Tianyan</a>
+</div>
+
+<script>
+// Scroll reveal animation
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.feature-card, .card, .pricing-card, .stat-card, [class*="feature"], [class*="card"]').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+    observer.observe(el);
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+// Navbar background on scroll
+const nav = document.querySelector('nav, .nav, .navbar, header');
+if (nav) {
+    window.addEventListener('scroll', () => {
+        nav.style.background = window.scrollY > 50 ? 'rgba(10,10,15,0.98)' : 'rgba(10,10,15,0.85)';
+    });
+}
+
+// Counter animation for stats
+document.querySelectorAll('[data-count], .stat-number, .counter').forEach(el => {
+    const target = parseInt(el.dataset.count || el.textContent);
+    if (isNaN(target)) return;
+    let current = 0;
+    const increment = target / 60;
+    const suffix = el.dataset.suffix || '';
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = Math.floor(current).toLocaleString() + suffix;
+    }, 25);
+});
+
+console.log('MoKangMedical interactive features loaded');
+</script>
 </body>
 </html>
