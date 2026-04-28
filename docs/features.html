@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能特性 - SearXNG Medical AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 0; }
+        .header .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .logo svg { width: 40px; height: 40px; }
+        .logo-text { font-size: 24px; font-weight: 700; }
+        .nav { display: flex; gap: 30px; }
+        .nav a { color: white; text-decoration: none; font-weight: 500; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .content { padding: 60px 0; }
+        .section { margin-bottom: 60px; }
+        .section h2 { font-size: 32px; margin-bottom: 20px; color: #1a73e8; }
+        .section p { font-size: 18px; color: #666; line-height: 1.6; margin-bottom: 20px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .feature-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .feature-card h3 { font-size: 24px; margin-bottom: 15px; }
+        .feature-card p { color: #666; }
+        .footer { background: #333; color: white; padding: 40px 0 20px; }
+        .footer .container { text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" fill="white" opacity="0.2"/><path d="M50 20L20 35l30 15 30-15z" fill="white"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">首页</a>
+                <a href="features.html">功能</a>
+                <a href="api-docs.html">API</a>
+                <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="content">
+        <div class="container">
+            <div class="section">
+                <h2>核心功能</h2>
+                <p>SearXNG Medical AI 提供全面的搜索解决方案</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>多源聚合搜索</h3>
+                        <p>聚合70+搜索引擎，包括百度、Google、Bing、学术搜索引擎等，一次搜索获取全网结果。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>医疗专业搜索</h3>
+                        <p>专为医疗AI优化，支持药品信息、疾病查询、临床指南、学术文献、罕见病信息搜索。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>隐私保护</h3>
+                        <p>零追踪、零记录，不存储用户搜索历史，符合GDPR/HIPAA合规要求。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>极速响应</h3>
+                        <p>毫秒级响应，Redis缓存加速，支持高并发搜索请求。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>AI增强</h3>
+                        <p>智能搜索建议、语义搜索、结果摘要，提升搜索体验。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>插件系统</h3>
+                        <p>支持插件扩展，可自定义搜索引擎、添加新功能。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>医疗AI专业功能</h2>
+                <p>专为医疗行业设计的搜索功能</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>药品信息搜索</h3>
+                        <p>搜索药品说明书、药物相互作用、不良反应、用法用量等信息。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>疾病信息搜索</h3>
+                        <p>搜索疾病症状、诊断标准、治疗方案、临床指南等信息。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>罕见病信息搜索</h3>
+                        <p>搜索罕见病信息、患者社区、临床试验、遗传学信息。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>学术文献搜索</h3>
+                        <p>搜索PubMed、arXiv、Google Scholar等学术数据库。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 SearXNG Medical AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
