@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearXNG Medical AI - 医疗AI智能搜索引擎</title>
+    <meta name="description" content="基于SearXNG的医疗AI智能搜索引擎，支持多源聚合、隐私保护、专业医疗搜索">
+    <meta name="keywords" content="SearXNG, 医疗AI, 搜索引擎, 隐私搜索, 学术搜索">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="SearXNG Medical AI">
+    <meta property="og:description" content="医疗AI智能搜索引擎">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mokangmedical.github.io/searxng/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a73e8'/><path d='M50 20L20 35l30 15 30-15z' fill='white'/></svg>">
+    
+    <!-- Styles -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #4285f4;
+            --bg: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1a1a2e;
+                --bg-secondary: #16213e;
+                --text: #e8eaed;
+                --text-secondary: #9aa0a6;
+                --border: #3c4043;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+        
+        .nav a:hover {
+            opacity: 1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: var(--bg-secondary);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* Search Demo */
+        .demo {
+            padding: 100px 0;
+        }
+        
+        .demo-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 18px 24px;
+            font-size: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+        
+        .search-box button {
+            padding: 18px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .shortcuts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .shortcut {
+            padding: 8px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .shortcut code {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Stats */
+        .stats {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        
+        .stat-item h3 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .stat-item p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 100px 0;
+            background: var(--bg-secondary);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .pricing-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid var(--primary);
+        }
+        
+        .pricing-card.featured::before {
+            content: '最受欢迎';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 4px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-card .price {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .pricing-card .period {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .pricing-card ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pricing-card ul li::before {
+            content: '✓';
+            color: #34a853;
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 60px 0 30px;
+            background: var(--text);
+            color: var(--bg);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .footer a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: color 0.2s;
+        }
+        
+        .footer a:hover {
+            color: var(--bg);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 16px; }
+            .nav { display: none; }
+            .search-box { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="45" fill="white" opacity="0.2"/>
+                    <path d="M50 20L20 35l30 15 30-15z" fill="white"/>
+                    <path d="M20 50l30 15 30-15" stroke="white" stroke-width="3" fill="none"/>
+                    <circle cx="50" cy="45" r="8" fill="white"/>
+                </svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="#features">功能</a>
+                <a href="#demo">演示</a>
+                <a href="#pricing">定价</a>
+                <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>医疗AI智能搜索引擎</h1>
+            <p>基于SearXNG的私有元搜索引擎，支持多源聚合、隐私保护、专业医疗搜索</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/MoKangMedical/searxng" class="btn btn-primary">开始使用</a>
+                <a href="#demo" class="btn btn-secondary">在线演示</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>70+</h3>
+                    <p>搜索引擎支持</p>
+                </div>
+                <div class="stat-item">
+                    <h3>&lt;0.01s</h3>
+                    <p>平均响应时间</p>
+                </div>
+                <div class="stat-item">
+                    <h3>99.9%</h3>
+                    <p>服务可用性</p>
+                </div>
+                <div class="stat-item">
+                    <h3>100%</h3>
+                    <p>隐私保护</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>核心功能</h2>
+                <p>专为医疗AI场景设计的搜索引擎</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>多源聚合</h3>
+                    <p>聚合70+搜索引擎，一次搜索获取全网结果，支持百度、Google、学术搜索等</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏥</div>
+                    <h3>医疗专业</h3>
+                    <p>专为医疗AI优化，支持药品信息、疾病查询、临床指南、学术文献搜索</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>隐私保护</h3>
+                    <p>零追踪、零记录，不存储用户搜索历史，符合GDPR/HIPAA合规要求</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>极速响应</h3>
+                    <p>毫秒级响应，Redis缓存加速，支持高并发搜索请求</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI增强</h3>
+                    <p>智能搜索建议、语义搜索、结果摘要，提升搜索体验</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>插件系统</h3>
+                    <p>支持插件扩展，可自定义搜索引擎、添加新功能</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Demo -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="section-title">
+                <h2>在线演示</h2>
+                <p>体验SearXNG Medical AI的搜索功能</p>
+            </div>
+            <div class="demo-container">
+                <div class="search-box">
+                    <input type="text" placeholder="输入搜索关键词...">
+                    <button>搜索</button>
+                </div>
+                <div class="shortcuts">
+                    <span class="shortcut"><code>!bd</code> 百度搜索</span>
+                    <span class="shortcut"><code>!gs</code> 学术搜索</span>
+                    <span class="shortcut"><code>!sgw</code> 微信搜索</span>
+                    <span class="shortcut"><code>!gh</code> GitHub</span>
+                    <span class="shortcut"><code>!pm</code> PubMed</span>
+                    <span class="shortcut"><code>!hf</code> HuggingFace</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>定价方案</h2>
+                <p>选择适合您的方案</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>社区版</h3>
+                    <div class="price">免费</div>
+                    <div class="period">永久免费</div>
+                    <ul>
+                        <li>基础搜索功能</li>
+                        <li>10+搜索引擎</li>
+                        <li>JSON API接口</li>
+                        <li>社区支持</li>
+                    </ul>
+                    <a href="https://github.com/MoKangMedical/searxng" class="btn btn-secondary" style="color: var(--primary); border-color: var(--primary);">开始使用</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>专业版</h3>
+                    <div class="price">$99</div>
+                    <div class="period">/月</div>
+                    <ul>
+                        <li>所有社区版功能</li>
+                        <li>50+搜索引擎</li>
+                        <li>医疗AI专业搜索</li>
+                        <li>优先技术支持</li>
+                        <li>99.9% SLA保证</li>
+                    </ul>
+                    <a href="mailto:sales@example.com" class="btn btn-primary" style="background: var(--primary); color: white;">立即订阅</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>企业版</h3>
+                    <div class="price">定制</div>
+                    <div class="period">联系销售</div>
+                    <ul>
+                        <li>所有专业版功能</li>
+                        <li>70+搜索引擎</li>
+                        <li>私有化部署</li>
+                        <li>定制开发</li>
+                        <li>7x24技术支持</li>
+                    </ul>
+                    <a href="mailto:sales@example.com" class="btn btn-secondary" style="color: var(--primary); border-color: var(--primary);">联系销售</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>产品</h4>
+                    <a href="#features">功能特性</a>
+                    <a href="#pricing">定价方案</a>
+                    <a href="#">文档</a>
+                    <a href="#">更新日志</a>
+                </div>
+                <div>
+                    <h4>资源</h4>
+                    <a href="#">API文档</a>
+                    <a href="#">使用指南</a>
+                    <a href="#">示例代码</a>
+                    <a href="#">博客</a>
+                </div>
+                <div>
+                    <h4>社区</h4>
+                    <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+                    <a href="#">Discord</a>
+                    <a href="#">讨论区</a>
+                    <a href="#">贡献指南</a>
+                </div>
+                <div>
+                    <h4>公司</h4>
+                    <a href="#">关于我们</a>
+                    <a href="#">联系方式</a>
+                    <a href="#">隐私政策</a>
+                    <a href="#">服务条款</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SearXNG Medical AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
