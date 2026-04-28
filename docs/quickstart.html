@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速开始 - SearXNG Medical AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 0; }
+        .header .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .logo svg { width: 40px; height: 40px; }
+        .logo-text { font-size: 24px; font-weight: 700; }
+        .nav { display: flex; gap: 30px; }
+        .nav a { color: white; text-decoration: none; font-weight: 500; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .content { padding: 60px 0; }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 32px; margin-bottom: 20px; color: #1a73e8; }
+        .section h3 { font-size: 24px; margin: 30px 0 15px; }
+        .section p { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 20px; }
+        .code-block { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 20px; }
+        .code-block code { font-family: 'Monaco', 'Menlo', monospace; font-size: 14px; }
+        .steps { counter-reset: step; }
+        .step { counter-increment: step; margin-bottom: 30px; padding-left: 60px; position: relative; }
+        .step::before { content: counter(step); position: absolute; left: 0; top: 0; width: 40px; height: 40px; background: #1a73e8; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .step h3 { margin-top: 0; }
+        .footer { background: #333; color: white; padding: 40px 0 20px; }
+        .footer .container { text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" fill="white" opacity="0.2"/><path d="M50 20L20 35l30 15 30-15z" fill="white"/></svg>
+                <span class="logo-text">SearXNG Medical AI</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html">首页</a>
+                <a href="quickstart.html">快速开始</a>
+                <a href="features.html">功能</a>
+                <a href="api-docs.html">API</a>
+                <a href="https://github.com/MoKangMedical/searxng">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="content">
+        <div class="container">
+            <div class="section">
+                <h2>快速开始</h2>
+                <p>5分钟快速部署SearXNG Medical AI</p>
+                
+                <div class="steps">
+                    <div class="step">
+                        <h3>克隆项目</h3>
+                        <div class="code-block">
+                            <code>git clone https://github.com/MoKangMedical/searxng.git<br>cd searxng</code>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>启动服务</h3>
+                        <div class="code-block">
+                            <code>./manage.sh start</code>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>检查状态</h3>
+                        <div class="code-block">
+                            <code>./scripts/status.sh</code>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>访问搜索</h3>
+                        <p>打开浏览器访问: <strong>http://localhost:8888</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Python集成</h2>
+                <div class="code-block">
+                    <code>from api.searxng_api import SearXNGClient
+
+client = SearXNGClient("http://localhost:8888")
+
+# 百度搜索
+results = client.search_baidu("医疗AI")
+
+# 学术搜索
+results = client.search_academic("artificial intelligence")</code>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>常用命令</h2>
+                <div class="code-block">
+                    <code># 启动服务
+./manage.sh start
+
+# 停止服务
+./manage.sh stop
+
+# 重启服务
+./manage.sh restart
+
+# 查看状态
+./manage.sh status
+
+# 查看日志
+./manage.sh logs
+
+# 测试服务
+./manage.sh test</code>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 SearXNG Medical AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
