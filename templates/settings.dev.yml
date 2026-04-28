@@ -1,0 +1,127 @@
+# SearXNG 开发环境配置
+# 用于本地开发和测试
+
+use_default_settings: true
+
+general:
+  debug: true
+  instance_name: "SearXNG Dev"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: true
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "dev_secret_key_change_in_production"
+  limiter: false
+  image_proxy: true
+  method: "GET"
+
+search:
+  safe_search: 0
+  autocomplete: "baidu"
+  concurrent_requests_per_engine: 5
+  max_request_timeout: 10.0
+  ban_time_on_fail: 5
+  max_ban_time_on_fail: 120
+
+redis:
+  url: "redis://redis:6379/0"
+
+cache:
+  cache_server: "redis://redis:6379/1"
+  expire: 3600
+
+ui:
+  static_use_hash: true
+  infinite_scroll: true
+  center_alignment: true
+  query_in_title: true
+  results_on_new_tab: false
+  theme_args:
+    simple_style: auto
+
+engines:
+  # 国内搜索引擎
+  - name: baidu
+    engine: baidu
+    shortcut: bd
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: sogou
+    engine: sogou
+    shortcut: sg
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  - name: 360search
+    engine: 360search
+    shortcut: 360
+    categories: [general]
+    disabled: false
+    timeout: 4.0
+
+  # 国际搜索引擎
+  - name: google
+    engine: google
+    shortcut: go
+    categories: [general]
+    disabled: false
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    categories: [general]
+    disabled: false
+
+  - name: bing
+    engine: bing
+    shortcut: bi
+    categories: [general]
+    disabled: false
+
+  # 学术搜索
+  - name: google scholar
+    engine: google_scholar
+    shortcut: gs
+    categories: [science, scientific publications]
+    disabled: false
+
+  - name: arxiv
+    engine: arxiv
+    shortcut: arx
+    categories: [science, scientific publications]
+    disabled: false
+
+  # 知识库
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    categories: [general]
+    disabled: false
+
+  # IT/开发
+  - name: github
+    engine: github
+    shortcut: gh
+    categories: [it, repos]
+    disabled: false
+
+  # 微信搜索
+  - name: sogou wechat
+    engine: sogou_wechat
+    shortcut: sgw
+    categories: [news]
+    disabled: false
+    timeout: 4.0
+
+  # 禁用的引擎
+  - name: yahoo
+    disabled: true
+  - name: yandex
+    disabled: true
